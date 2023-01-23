@@ -1,0 +1,53 @@
+{
+  "generate": "generate",
+  "document_name": "Document name",
+  "last_words": "Last words",
+  "words": "Words",
+  "subject": "Subject",
+  "content": "Content",
+  "language": "Language",
+  "output": "output",
+  "project": "Project",
+  "new_project": "New project",
+  "placeholder_subject": "Dreamtone",
+  "placeholder_search": "What do you want to create ?",
+  "placeholder_content": "Describe what you want",
+  "copy_generated": "Your AI-created copies will appear here.",
+  "wait": "A little patience it happens",
+  "sidebar": {
+    "library": "Library",
+    "saved": "Saved",
+    "trial": "Trial period",
+    "premium": "Premium",
+    "words": "Words",
+    "upgrade": "Upgrade plan",
+    "features": "Suggest an improvement"
+  },
+  "library": {
+    "title": "Library",
+    "list": {
+      "all": "All models",
+      "website": "Website",
+      "ecommerce":  "E-commerce",
+      "articles_and_blogs": "Articles and blogs",
+      "others": "Others"
+    },
+    "soon": "Soon"
+  },
+  "tools": {
+    "youtube_script": {
+      "title": "Youtube script",
+      "description": "Generate scripts for your youtube videos worthy of the best !"
+    }
+  },
+  "languages": {
+    "english": "English",
+    "french": "French"
+  },
+  "user_popover": {
+    "profile": "My profile",
+    "plan_and_billing": "Plan and billing",
+    "team": "Team",
+    "logout": "Logout"
+  }
+}
