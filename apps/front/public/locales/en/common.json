@@ -44,6 +44,27 @@
     "reactivate": "Reactivate",
     "change_plan": "Change plan"
   },
+  "register" : {
+    "alternative": "The cheaper alternative",
+    "subtitle": "No credit card required",
+    "name": "Full name",
+    "confirm": "Confirm your password",
+    "password": "Password",
+    "email": "Email",
+    "sign_up": "Sign up for free",
+    "already_sign_up": "Already have an account?",
+    "sign_in": "Sign in",
+    "they_trust_us": "They are already many to trust us: freelancers, agencies and companies"
+  },
+  "connexion" : {
+    "subtitle": "No credit card required",
+    "password": "Password",
+    "email": "Email",
+    "sign_in": "Sign in",
+    "not_registered": "Not yet registered?",
+    "sign_up": "Sign up",
+    "welcome_back": "Welcome back"
+  },
   "settings": {
     "title": "Settings",
     "profile": {
