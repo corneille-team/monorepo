@@ -1,8 +1,9 @@
 import httpStatus from 'http-status';
-import { usersRolesType } from 'lib-enums';
+import { subscriptionsType, usersRolesType } from 'lib-enums';
 
-import { usersRepository } from '../../repositories';
+import { companiesRepository, usersRepository } from '../../repositories';
 import { compare, createToken, encode } from '../../services';
+import configs from '../../configs';
 
 async function signIn(req, res) {
   const email = req.body.email;
@@ -33,7 +34,7 @@ async function signUp(req, res) {
 
   const hashedPassword = await encode(password);
 
-  const user = await usersRepository.createUser({
+  let user = await usersRepository.createUser({
     first_name,
     last_name,
     email,
@@ -44,6 +45,20 @@ async function signUp(req, res) {
   if (!user) {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).end();
   }
+
+  const company = await companiesRepository.createCompany({
+    owner_id: String(user._id),
+    members_ids: [String(user._id)],
+    subscription: {
+      plan: subscriptionsType.free,
+      words: configs.freeTrialWords,
+      seats: 1,
+      subscription_date: new Date(),
+    },
+    usages: [],
+  });
+
+  user = await usersRepository.updateUserById(user._id, { company_id: String(company._id) });
 
   const token = createToken({
     issuerId: user._id,

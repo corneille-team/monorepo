@@ -3,7 +3,7 @@ export const configs = {
   authorizedUrls: process.env.AUTHORIZED_URLS || 'http://localhost:3000',
   port: process.env.PORT || 3001,
   environment: process.env.ENVIRONMENT || 'local',
-  freeTrialTokens: process.env.FREE_TRIAL_TOKENS || 2000,
+  freeTrialWords: process.env.FREE_TRIAL_WORDS || 5000,
   services: {
     bcrypt: {
       salt_rounds: process.env.SALT_ROUNDS || 10,
