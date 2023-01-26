@@ -1,10 +1,10 @@
-import { toolsType, subscriptionsType } from 'lib-enums';
+import { toolsType, subscriptionsType, usageStatusType } from 'lib-enums';
 import httpStatus from 'http-status';
-import { v4 as uuidv4 } from 'uuid';
 
 import { servicesLib } from '../../../../../libs/tools';
-import { usersRepository } from '../../repositories';
+import { companiesRepository } from '../../repositories';
 import { countWords } from '../../../../../libs/utils';
+import { promptByToolName } from '../../../../../libs/mappers';
 
 function getService(name) {
   switch (name) {
@@ -18,8 +18,13 @@ function getService(name) {
 async function useTool(req, res) {
   const { user } = req.locals;
 
-  if (user.subscription.plan === subscriptionsType.free && user.subscription.tokens <= 0) {
-    return res.status(httpStatus.UNPROCESSABLE_ENTITY).send({ error: 'Not enough credits' });
+  const company = await companiesRepository.getCompanyByUserId(user._id);
+  if (!company) {
+    return res.status(httpStatus.NOT_FOUND).send({ error: 'Company not found' });
+  }
+
+  if (company.subscription.plan === subscriptionsType.free && company.subscription.words <= 0) {
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).send({ error: 'Not enough words' });
   }
 
   const toolName = req.params.tool;
@@ -41,51 +46,70 @@ async function useTool(req, res) {
     return res.status(httpStatus.BAD_REQUEST).send({ error: 'Service not found' });
   }
 
-  const completion = await service({
+  const payload = {
     language: req.query.language,
     subject: req.query.subject,
     tone: req.query.tone,
-  });
-  if (!completion.data) {
+    n: req.query.output,
+  };
+
+  const prompt = promptByToolName(toolName, payload);
+
+  const { data: completion } = await service(prompt, payload);
+
+  if (!completion) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Request Failed' });
   }
 
-  const usage = completion.data.usage;
+  const usage = completion.usage;
 
-  const id = `retrieve_data: ${uuidv4()}`;
+  if (!completion.choices || !completion.choices.length) {
+    const newUsages = company.usages || [];
+    newUsages.push({
+      user_id: String(user._id),
+      service: toolName,
+      document_name: req.query.document_name,
+      prompt,
+      results: null,
+      tokens_used: usage ? usage.total_tokens : 0,
+      completion_id: completion.id,
+      generation_date: new Date(),
+      status: usageStatusType.failure,
+    });
 
-  const userUsage = {
-    service: toolName,
-    title: req.query.title,
-    subject,
-    data: id,
-    tokens_used: usage.total_tokens,
-  };
+    await companiesRepository.updateCompanyById(company._id, {
+      usages: newUsages,
+    });
 
-  const updatedUser = await usersRepository.updateUserById(user._id, {
-    usages: user.usages ? [...user.usages, userUsage] : [userUsage],
-  });
-
-  if (!completion.data.choices || !completion.data.choices.length) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Response invalid' });
   }
 
-  const data = completion.data.choices[0].text;
+  const choices = completion.choices;
 
-  const wordsGenerated = countWords(data);
+  const wordsGenerated = choices.reduce((initial, curr) => initial + countWords(curr.text), 0);
 
-  const newUsage = updatedUser.usages.find((usage) => usage.data === id);
-  if (newUsage) {
-    const newUserUsages = updatedUser.usages.filter((usage) => usage.data !== id);
-    newUserUsages.push({ ...newUsage, data });
+  const results = choices.map((d) => ({ text: d.text }));
 
-    await usersRepository.updateUserById(user._id, {
-      usages: newUserUsages,
-      'subscription.words': Math.abs(user.subscription.words - wordsGenerated),
-    });
-  }
+  const newUsages = company.usages || [];
+  newUsages.push({
+    user_id: String(user._id),
+    service: toolName,
+    document_name: req.query.document_name,
+    prompt,
+    results,
+    tokens_used: usage ? usage.total_tokens : 0,
+    completion_id: completion.id,
+    generation_date: new Date(),
+    status: usageStatusType.success,
+  });
 
-  return res.send({ data });
+  const lastWords = company.subscription.words - wordsGenerated;
+  await companiesRepository.updateCompanyById(company._id, {
+    usages: newUsages,
+    'subscription.words': lastWords > 0 ? lastWords : 0,
+  });
+
+  return res.send({ data: results.map((r) => r.text) });
 }
 
 export const toolsController = {

@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import Link from 'next/link';
+import { settingsCategories } from 'lib-enums';
 
 import { disconnectUser } from '../../actions/user';
 import { imagesLinks, PATHS } from '../../utils';
@@ -19,7 +21,7 @@ const StyledPopover = styled.div`
   background-color: white;
   border-radius: 6px;
   border: 1px solid ${theme.colors.stroke};
-  top: 70px;
+  top: 60px;
   right: 0;
   width: 250px;
   display: flex;
@@ -78,6 +80,7 @@ const Header = styled.div`
   span {
     font-weight: 300;
     font-size: 10px;
+    cursor: default;
   }
 
   img {
@@ -88,7 +91,7 @@ const Header = styled.div`
   }
 `;
 
-const Popover = ({ openAccount }) => {
+const Popover = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -107,18 +110,24 @@ const Popover = ({ openAccount }) => {
         </p>
       </Header>
       <ElementsContainer>
-        <Element onClick={openAccount}>
-          <img src={imagesLinks.icons.profile} alt={'profile'} />
-          <p>{t('common:user_popover.profile')}</p>
-        </Element>
-        <Element>
-          <img src={imagesLinks.icons.plan} alt={'plan and billing'} />
-          <p>{t('common:user_popover.plan_and_billing')}</p>
-        </Element>
-        <Element>
-          <img src={imagesLinks.icons.team} alt={'team'} />
-          <p>{t('common:user_popover.team')}</p>
-        </Element>
+        <Link href={`${PATHS.SETTINGS}?category=${settingsCategories.profile}`}>
+          <Element>
+            <img src={imagesLinks.icons.profile} alt={'profile'} />
+            <p>{t('common:user_popover.profile')}</p>
+          </Element>
+        </Link>
+        <Link href={`${PATHS.SETTINGS}?category=${settingsCategories.plan_and_billing}`}>
+          <Element>
+            <img src={imagesLinks.icons.plan} alt={'plan and billing'} />
+            <p>{t('common:user_popover.plan_and_billing')}</p>
+          </Element>
+        </Link>
+        <Link href={`${PATHS.SETTINGS}?category=${settingsCategories.team}`}>
+          <Element>
+            <img src={imagesLinks.icons.team} alt={'team'} />
+            <p>{t('common:user_popover.team')}</p>
+          </Element>
+        </Link>
       </ElementsContainer>
       <Element
         onClick={() => dispatch(disconnectUser()).then(() => router.push(PATHS.CONNEXION))}

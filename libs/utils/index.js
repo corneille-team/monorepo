@@ -1,3 +1,4 @@
 export function countWords(str) {
-  return str ? str.split(' ').length : 0;
+  if (!str || !str.length) return 0;
+  return str.split(' ').length;
 }

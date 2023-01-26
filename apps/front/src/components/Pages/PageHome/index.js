@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { toolsType } from 'lib-enums';
 
@@ -108,20 +107,25 @@ const PageHome = () => {
 
   const list = {
     all: {
+      key: 'all',
       value: t('common:library.list.all'),
     },
     website: {
+      key: 'website',
       value: t('common:library.list.website'),
     },
     ecommerce: {
+      key: 'ecommerce',
       value: t('common:library.list.ecommerce'),
       comingSoon: true,
     },
     articles_and_blogs: {
+      key: 'articles_and_blogs',
       value: t('common:library.list.articles_and_blogs'),
       comingSoon: true,
     },
     others: {
+      key: 'others',
       value: t('common:library.list.others'),
       comingSoon: true,
     },
@@ -133,7 +137,7 @@ const PageHome = () => {
   const [tool, setTool] = useState(null);
 
   return (
-    <LayoutWithSidebar path={PATHS.HOME}>
+    <LayoutWithSidebar title={t('common:library.title')} path={PATHS.HOME}>
       <Search>
         <img src={imagesLinks.icons.bubbles} alt={'create'} />
         <input

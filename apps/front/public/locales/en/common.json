@@ -3,9 +3,12 @@
   "document_name": "Document name",
   "last_words": "Last words",
   "words": "Words",
+  "month": "Month",
+  "characters": "Characters",
   "subject": "Subject",
   "content": "Content",
   "language": "Language",
+  "tone": "Tone",
   "output": "output",
   "project": "Project",
   "new_project": "New project",
@@ -14,11 +17,12 @@
   "placeholder_content": "Describe what you want",
   "copy_generated": "Your AI-created copies will appear here.",
   "wait": "A little patience it happens",
+  "modify": "Modify",
+  "try": "Try",
+  "quality": "Quality",
   "sidebar": {
     "library": "Library",
     "saved": "Saved",
-    "trial": "Trial period",
-    "premium": "Premium",
     "words": "Words",
     "upgrade": "Upgrade plan",
     "features": "Suggest an improvement"
@@ -33,6 +37,60 @@
       "others": "Others"
     },
     "soon": "Soon"
+  },
+  "plans": {
+    "trial": "Trial period",
+    "premium": "Premium",
+    "reactivate": "Reactivate",
+    "change_plan": "Change plan"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": {
+      "personal_infos": "Personal informations",
+      "identifier": "Identifier",
+      "password": "Password",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email",
+      "old_password": "Old password",
+      "new_password": "New password",
+      "confirmation_password": "Confirmation",
+      "password_should_be_equal": "Passwords must correspond"
+    },
+    "plan_and_billing": {
+      "actual_plan": "Actual plan",
+      "price": "Price",
+      "quality": "Premium",
+      "free_plan": {
+        "plan": "Free",
+        "title": "Try Dreamtone for free",
+        "description": "Free trial of Dreamtone features to help you get a taste of AI writing",
+        "per_what": "For a new user",
+        "try_description": "Try all the features to find what works best for you."
+      },
+      "premium_plan": {
+        "plan": "Premium",
+        "title": "For trade pros",
+        "description": "\nAwesome tools to help you write and optimize your day-to-day business performance",
+        "per_what": "Per month"
+      },
+      "arguments": {
+        "ai_sales_templates": "AI Sales templates",
+        "languages": "languages"
+      }
+    },
+    "team": {
+      "remaining_user_slots": "Remaining user slots",
+      "your_team": "Your team",
+      "add": "Add",
+      "email": "Email",
+      "collaborator": "Collaborator",
+      "add_collaborator": "Add collaborator",
+      "remaining_invite": "Remaining invite",
+      "remaining_invites": "Remaining invites",
+      "confirm": "Confirm"
+    }
   },
   "tools": {
     "youtube_script": {
@@ -49,5 +107,15 @@
     "plan_and_billing": "Plan and billing",
     "team": "Team",
     "logout": "Logout"
+  },
+  "tones": {
+    "professional": "Professional",
+    "funny": "Funny",
+    "excited": "Excited",
+    "encouraging": "Encouraging",
+    "dramatic": "Dramatic",
+    "witty": "Witty",
+    "sarcastic": "Sarcastic",
+    "creative": "Creative"
   }
 }

@@ -35,7 +35,7 @@ export async function tokenMiddleware(req, res, next) {
       return res.status(FORBIDDEN).end();
     }
 
-    const user = await usersRepository.getUserById(identity.user_id);
+    const user = await usersRepository.getUserById(identity.user_id, ['password']);
 
     if (!user) {
       return res.status(FORBIDDEN).end();

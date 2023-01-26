@@ -17,9 +17,12 @@ export async function useTool(tool, data) {
       method: 'GET',
       url: `/tools/${tool}`,
       params: {
-        title: data.title,
-        language: data.language,
-        subject: data.subject,
+        document_name: data?.document_name,
+        language: data?.language,
+        subject: data?.subject,
+        content: data?.content,
+        tone: data?.tone,
+        output: data?.output ? parseInt(data.output) : 0,
       },
     });
 

@@ -10,3 +10,8 @@ export const updateUserValidation = Joi.object({
     }),
   ),
 });
+
+export const changePasswordValidation = Joi.object({
+  old_password: Joi.string().required(),
+  new_password: Joi.string().required(),
+});

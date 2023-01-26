@@ -3,14 +3,18 @@ import Modal from 'react-bootstrap/Modal';
 import styled, { keyframes } from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
-import { languagesType } from 'lib-enums';
+import { languagesType, tonesType } from 'lib-enums';
 import Skeleton from 'react-loading-skeleton';
 import { TypeAnimation } from 'react-type-animation';
+import copy from 'copy-to-clipboard';
 
 import theme from '../../styles/theme';
 import { imagesLinks } from '../../utils';
 import Dropdown from '../Dropdown';
 import Spinner from '../Spinner';
+import { useTool } from '../../actions/tools';
+import { countWords } from '../../../../../libs/utils';
+import { getCompany } from '../../actions/company';
 
 const Header = styled.div`
   display: flex;
@@ -42,9 +46,14 @@ const Container = styled.div`
 const Left = styled.div`
   position: relative;
   width: 450px;
-  padding: 30px 30px 100px 30px;
   border-right: 1px solid ${theme.colors.stroke};
   min-height: calc(100vh - 60px);
+  overflow-y: hidden;
+`;
+
+const LeftContent = styled.div`
+  padding: 30px;
+  height: calc(100vh - 60px - 100px);
   overflow-y: auto;
 `;
 
@@ -102,6 +111,7 @@ const Language = styled.div`
 `;
 
 const Actions = styled.div`
+  background-color: white;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -162,6 +172,10 @@ const OutputSelector = styled.div`
   p {
     font-size: 12px;
   }
+
+  &:hover {
+    border-color: ${theme.colors.blue};
+  }
 `;
 
 const Right = styled.div`
@@ -171,10 +185,45 @@ const Right = styled.div`
   overflow-y: auto;
 `;
 
+const Copy = styled.img`
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  visibility: hidden;
+`;
+
 const Result = styled.div`
   border: 1px solid ${theme.colors.stroke};
   border-radius: 10px;
   padding: 20px;
+  margin-bottom: 20px;
+
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  p {
+    font-weight: 400;
+    line-height: 1.5;
+    font-size: 14px;
+    color: ${theme.colors.blueText};
+    margin-bottom: 10px;
+  }
+
+  span {
+    color: ${theme.colors.gray};
+    text-transform: lowercase;
+  }
+
+  &:hover {
+    border-color: ${theme.colors.blue};
+  }
+
+  &:hover ${Copy} {
+    visibility: visible;
+  }
 `;
 
 const Waiter = styled.div`
@@ -198,9 +247,12 @@ const Waiter = styled.div`
   }
 `;
 
-const LogoWrapper = styled.img`
+const Logo = styled.img`
   width: 170px;
   height: 170px;
+`;
+
+const LogoWrapper = styled(Logo)`
   animation: bounce2 1.5s ease infinite;
   @keyframes bounce2 {
     0%,
@@ -224,7 +276,7 @@ const ModalTool = ({ tool, handleClose }) => {
 
   const dispatch = useDispatch();
 
-  const user = useSelector((store) => store.user);
+  const company = useSelector((store) => store.company);
   const result = useSelector((store) => store.result);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -233,7 +285,13 @@ const ModalTool = ({ tool, handleClose }) => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [language, setLanguage] = useState(languagesType.english);
+  const [tone, setTone] = useState(tonesType.professional);
   const [output, setOutput] = useState(1);
+
+  const [error, setError] = useState({
+    subject: false,
+    content: false,
+  });
 
   return (
     <Modal show={true} onHide={() => null} size={'tool'}>
@@ -243,63 +301,89 @@ const ModalTool = ({ tool, handleClose }) => {
       </Header>
       <Container>
         <Left>
-          <Field>
-            <LastWords>
-              <p>
-                {t(`common:last_words`)}:{' '}
-                <span>
-                  {user?.subscription?.words} {t('common:words').toLowerCase()}
-                </span>
-              </p>
-            </LastWords>
-          </Field>
-          <Field>
-            <label>{t('common:document_name')}</label>
-            <input
-              value={documentName}
-              onChange={(e) => setDocumentName(e.target.value)}
-              placeholder={t('common:document_name')}
-            />
-          </Field>
-          <Field>
-            <label>{t('common:subject')}*</label>
-            <input
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder={t('common:placeholder_subject')}
-            />
-            <TextLength>
-              <span>{subject?.length}/300</span>
-            </TextLength>
-          </Field>
-          <Field>
-            <label>{t('common:content')}*</label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder={t('common:placeholder_content')}
-            />
-            <TextLength>
-              <span>{content?.length}/600</span>
-            </TextLength>
-          </Field>
-          <Field>
-            <label>{t('common:language')}</label>
-            <Dropdown
-              value={
-                <Language>
-                  <img src={imagesLinks.flags[language]} alt={'language'} />
-                  <p>{t(`common:languages.${language}`)}</p>
-                </Language>
-              }
-            >
-              {Object.keys(languagesType)?.map((l) => (
-                <p key={l} onClick={() => setLanguage(l)}>
-                  {t(`common:languages.${l}`)}
+          <LeftContent>
+            <Field>
+              <LastWords>
+                <p>
+                  {t(`common:last_words`)}:{' '}
+                  <span>
+                    {company?.subscription?.words} {t('common:words').toLowerCase()}
+                  </span>
                 </p>
-              ))}
-            </Dropdown>
-          </Field>
+              </LastWords>
+            </Field>
+            <Field>
+              <label>{t('common:document_name')}</label>
+              <input
+                value={documentName}
+                onChange={(e) => setDocumentName(e.target.value)}
+                placeholder={t('common:document_name')}
+              />
+            </Field>
+            <Field>
+              <label>{t('common:subject')}*</label>
+              <input
+                value={subject}
+                onChange={(e) => {
+                  setSubject(e.target.value);
+                  setError({ ...error, subject: !e.target.value });
+                }}
+                placeholder={t('common:placeholder_subject')}
+                style={{ borderColor: error?.subject && theme.colors.red }}
+              />
+              <TextLength>
+                <span>{subject?.length}/300</span>
+              </TextLength>
+            </Field>
+            <Field>
+              <label>{t('common:content')}*</label>
+              <textarea
+                value={content}
+                onChange={(e) => {
+                  setContent(e.target.value);
+                  setError({ ...error, content: !e.target.value });
+                }}
+                placeholder={t('common:placeholder_content')}
+                style={{ borderColor: error?.content && theme.colors.red }}
+              />
+              <TextLength>
+                <span>{content?.length}/600</span>
+              </TextLength>
+            </Field>
+            <Field>
+              <label>{t('common:language')}</label>
+              <Dropdown
+                value={
+                  <Language>
+                    <img src={imagesLinks.flags[language]} alt={'language'} />
+                    <p>{t(`common:languages.${language}`)}</p>
+                  </Language>
+                }
+              >
+                {Object.keys(languagesType)?.map((l) => (
+                  <p key={l} onClick={() => setLanguage(l)}>
+                    {t(`common:languages.${l}`)}
+                  </p>
+                ))}
+              </Dropdown>
+            </Field>
+            <Field>
+              <label>{t('common:tone')}</label>
+              <Dropdown
+                value={
+                  <Language>
+                    <p>{t(`common:tones.${tone}`)}</p>
+                  </Language>
+                }
+              >
+                {Object.keys(tonesType)?.map((to) => (
+                  <p key={to} onClick={() => setTone(to)}>
+                    {t(`common:tones.${to}`)}
+                  </p>
+                ))}
+              </Dropdown>
+            </Field>
+          </LeftContent>
           <Actions>
             <OutputSelector>
               <input
@@ -313,8 +397,30 @@ const ModalTool = ({ tool, handleClose }) => {
               <p>{t('common:output')}</p>
             </OutputSelector>
             <button
-              disabled={isLoading || !subject || !content || !output}
-              onClick={() => !isLoading && null}
+              onClick={() => {
+                setError({
+                  subject: !subject,
+                  content: !content,
+                });
+
+                if (!isLoading && subject && content) {
+                  setIsLoading(true);
+                  console.log('HERE');
+                  dispatch(
+                    useTool(tool, {
+                      document_name: documentName,
+                      language: language,
+                      subject,
+                      content,
+                      tone,
+                      output,
+                    }),
+                  ).then(() => {
+                    setIsLoading(false);
+                    dispatch(getCompany());
+                  });
+                }
+              }}
             >
               {t('common:generate')} {isLoading && <Spinner />}
             </button>
@@ -330,9 +436,29 @@ const ModalTool = ({ tool, handleClose }) => {
 
           {!result && !isLoading && (
             <Waiter>
-              <LogoWrapper src={imagesLinks.logos.simple} alt={'logo'} />
+              <Logo src={imagesLinks.logos.simple} alt={'logo'} />
               <p>{t('common:copy_generated')}</p>
             </Waiter>
+          )}
+
+          {!isLoading && result && (
+            <div>
+              {result?.map((out, index) => (
+                <Result key={`out_${index}`}>
+                  <p>{out}</p>
+                  <div>
+                    <span>
+                      {countWords(out)} {t('common:words')} / {out?.length} {t('common:characters')}
+                    </span>
+                    <Copy
+                      onClick={() => copy(out)}
+                      src={imagesLinks.icons.content_copy}
+                      alt={'copy to clipboard'}
+                    />
+                  </div>
+                </Result>
+              ))}
+            </div>
           )}
         </Right>
       </Container>

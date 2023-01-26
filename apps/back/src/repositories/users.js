@@ -23,12 +23,12 @@ async function getUsers(filter, pick) {
   return users.map((user) => parseUser(user, pick));
 }
 
-async function getUserById(id) {
+async function getUserById(id, pick) {
   const UsersModel = getUsersModel();
 
   const user = await UsersModel.findById(id).lean();
 
-  return parseUser(user);
+  return parseUser(user, pick);
 }
 
 async function getUser(payload, _pick) {
@@ -55,12 +55,12 @@ async function createUser(payload) {
   return parseUser(user);
 }
 
-async function updateUserById(id, changes) {
+async function updateUserById(id, changes, pick) {
   const UsersModel = getUsersModel();
 
   const user = await UsersModel.findOneAndUpdate({ _id: id }, changes, { new: true }).lean();
 
-  return parseUser(user);
+  return parseUser(user, pick);
 }
 
 export const usersRepository = {

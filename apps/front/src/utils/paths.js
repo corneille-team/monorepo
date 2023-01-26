@@ -5,5 +5,5 @@ export const PATHS = {
   CONNEXION: '/connexion',
   REGISTER: '/register',
   LOGIN: '/login',
-  NOTION_REQUEST: '/',
+  SETTINGS: '/settings',
 };

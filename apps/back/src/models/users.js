@@ -1,8 +1,11 @@
 import { Schema, model } from 'mongoose';
-import { toolsType, subscriptionsType } from 'lib-enums';
 
 const UsersSchema = new Schema(
   {
+    company_id: {
+      type: String,
+      required: false,
+    },
     first_name: {
       type: String,
       required: false,
@@ -24,69 +27,8 @@ const UsersSchema = new Schema(
       type: String,
       required: true,
     },
-    subscription: {
-      plan: {
-        type: String,
-        enum: Object.keys(subscriptionsType),
-        default: subscriptionsType.free,
-        required: true,
-      },
-      words: Number,
-      subscription_date: Date,
-    },
-    projects: {
-      type: [
-        new Schema({
-          name: {
-            type: String,
-            required: true,
-          },
-          description: {
-            type: String,
-            required: true,
-          },
-        }),
-      ],
-      required: false,
-    },
-    usages: {
-      type: [
-        new Schema(
-          {
-            service: {
-              type: String,
-              enum: Object.keys(toolsType),
-              required: true,
-            },
-            title: {
-              type: String,
-              required: false,
-            },
-            prompt: {
-              type: String,
-              required: true,
-            },
-            data: {
-              type: String,
-              required: false,
-            },
-            tokens_used: {
-              type: Number,
-              required: false,
-            },
-            liked: {
-              type: Boolean,
-              default: false,
-            },
-            disliked: {
-              type: Boolean,
-              default: false,
-            },
-          },
-          { _id: false },
-        ),
-      ],
-      default: [],
+    words: {
+      type: Number,
       required: false,
     },
     picture_url: {

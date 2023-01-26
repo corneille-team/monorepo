@@ -1,18 +1,15 @@
 import { getOpenai, openaiModelAdapter, openaiModelsType } from '../openai';
 
-export function youtube_script(payload) {
+export function youtube_script(prompt, payload) {
   const openai = getOpenai();
 
-  const { subject, tone, language } = payload;
-
-  const maxTokens = 3000;
-
-  const promptToSend = `create youtube script for a video of 10-15min from this subject: ${subject}. in a ${tone} tone in ${language}`;
+  const maxTokens = 500;
 
   return openai.createCompletion({
     model: openaiModelAdapter(openaiModelsType.text_davinci_003),
-    prompt: promptToSend,
+    prompt,
     max_tokens: maxTokens,
+    n: payload.n,
     user: payload.userId,
   });
 }

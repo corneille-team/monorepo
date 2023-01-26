@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
-import { subscriptionsType } from 'lib-enums';
+import { useSelector } from 'react-redux';
+import { settingsCategories, subscriptionsType } from 'lib-enums';
 import { useTranslation } from 'next-i18next';
 
 import { imagesLinks, PATHS } from '../../utils';
 import theme from '../../styles/theme';
 import UserPopover from '../../components/UserPopover';
-import ModalAccount from '../../components/ModalAccount';
 import ModalCreateProject from '../../components/ModalCreateProject';
 
 const Container = styled.div`
@@ -126,7 +125,6 @@ const Topbar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1400px;
 `;
 
 const Content = styled.div`
@@ -163,7 +161,7 @@ const Title = styled.h5`
 
 const ButtonNewProject = styled.button`
   width: 100%;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   margin-bottom: 60px;
 
@@ -174,23 +172,13 @@ const ButtonNewProject = styled.button`
   }
 `;
 
-const Project = styled.p`
-  color: #bababa;
-  padding: 0 10px;
-  font-size: 12px;
-  margin-bottom: 10px;
-`;
-
-const LayoutWithSidebar = ({ path, children }) => {
+const LayoutWithSidebar = ({ title, path, children }) => {
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
-
   const user = useSelector((store) => store.user);
-  const project = useSelector((store) => store.project);
+  const company = useSelector((store) => store.company);
 
   const [showCreateProject, setShowCreateProject] = useState(false);
-  const [showAccount, setShowAccount] = useState(false);
 
   return (
     <Container>
@@ -206,10 +194,6 @@ const LayoutWithSidebar = ({ path, children }) => {
             <img src={imagesLinks.icons.plus_circle} alt={'new project'} />
             {t('common:new_project')}
           </ButtonNewProject>
-
-          <Project>
-            {t('common:project')} {project?.name}
-          </Project>
 
           <Link href={PATHS.HOME}>
             <Direction selected={path === PATHS.HOME}>
@@ -231,18 +215,18 @@ const LayoutWithSidebar = ({ path, children }) => {
 
         <div>
           <UpgradeLastWords>
-            {user?.subscription?.plan === subscriptionsType.free && (
-              <span>{t('common:sidebar.trial')}</span>
+            {company?.subscription?.plan === subscriptionsType.free && (
+              <span>{t('common:plans.trial')}</span>
             )}
-            {user?.subscription?.plan === subscriptionsType.premium && (
-              <span>{t('common:sidebar.premium')}</span>
+            {company?.subscription?.plan === subscriptionsType.premium && (
+              <span>{t('common:plans.premium')}</span>
             )}
             <p>
-              {t('common:sidebar.words')} - {user?.subscription?.words}
+              {t('common:sidebar.words')} - {company?.subscription?.words}
             </p>
           </UpgradeLastWords>
 
-          <Link href={PATHS.NOTION_REQUEST} target={'_blank'}>
+          <Link href={''} target={'_blank'}>
             <Direction extern style={{ margin: '20px 0' }}>
               <div>
                 <img src={imagesLinks.icons.message} alt={'request feature'} />
@@ -251,16 +235,19 @@ const LayoutWithSidebar = ({ path, children }) => {
             </Direction>
           </Link>
 
-          <ButtonUpgrade>
-            {t('common:sidebar.upgrade')} <img src={imagesLinks.icons.lightning} alt={'upgrade'} />
-          </ButtonUpgrade>
+          <Link href={`${PATHS.SETTINGS}?category=${settingsCategories.plan_and_billing}`}>
+            <ButtonUpgrade>
+              {t('common:sidebar.upgrade')}{' '}
+              <img src={imagesLinks.icons.lightning} alt={'upgrade'} />
+            </ButtonUpgrade>
+          </Link>
         </div>
       </Sidebar>
       <div>
         <TopbarContainer>
           <Topbar>
-            <Title>{t('common:library.title')}</Title>
-            <UserPopover openAccount={() => setShowAccount(true)}>
+            <Title>{title}</Title>
+            <UserPopover>
               <User>
                 <div style={{ display: 'flex' }}>
                   <UserPicture
@@ -275,7 +262,6 @@ const LayoutWithSidebar = ({ path, children }) => {
         <Content>{children}</Content>
       </div>
       {showCreateProject && <ModalCreateProject handleClose={() => setShowCreateProject(false)} />}
-      {showAccount && <ModalAccount handleClose={() => setShowAccount(false)} />}
     </Container>
   );
 };

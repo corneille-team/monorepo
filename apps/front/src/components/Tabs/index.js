@@ -64,8 +64,8 @@ const Tabs = ({ list, selected, select }) => {
           <Tab
             key={el.value}
             comingSoon={el.comingSoon}
-            isSelected={selected === el.value}
-            onClick={() => !el.comingSoon && select(el.value)}
+            isSelected={selected === el.key}
+            onClick={() => !el.comingSoon && select(el.key)}
           >
             {el.value}
             {el.comingSoon && <ComingSoon>{t('common:library.soon')}</ComingSoon>}

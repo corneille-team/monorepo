@@ -114,9 +114,9 @@ export const GlobalStyle = createGlobalStyle`
   .modal {
     padding-left: 0 !important;
   }  
+ 
   
   .modal-body {
-    padding: 20px 40px;
     
     h5 {
       text-align: center;
@@ -129,6 +129,8 @@ export const GlobalStyle = createGlobalStyle`
 
   .modal-fit-content .modal-content {
     width: fit-content;
+    padding: 30px;
+    margin-top: 100px;
   }
   
   .modal-account {

@@ -62,6 +62,53 @@ export async function updateUser(data) {
   }
 }
 
+export const UPDATE_PASSWORD_USER_SUCCESS = 'UPDATE_PASSWORD_USER_SUCCESS';
+export const UPDATE_PASSWORD_USER_FAILURE = 'UPDATE_PASSWORD_USER_FAILURE';
+
+export async function updatePasswordUser(data) {
+  try {
+    const token = getCookie(COOKIES_NAMES.token);
+    if (!token) {
+      return {
+        type: UPDATE_PASSWORD_USER_FAILURE,
+      };
+    }
+
+    const user = await callApi({
+      method: 'PATCH',
+      url: '/users/changePassword',
+      data,
+    });
+
+    return {
+      type: UPDATE_PASSWORD_USER_SUCCESS,
+      response: user,
+    };
+  } catch (err) {
+    return {
+      type: UPDATE_PASSWORD_USER_FAILURE,
+    };
+  }
+}
+
+export async function getCompanyMembers() {
+  try {
+    const token = getCookie(COOKIES_NAMES.token);
+    if (!token) {
+      return {
+        type: UPDATE_PASSWORD_USER_FAILURE,
+      };
+    }
+
+    return callApi({
+      method: 'GET',
+      url: '/users/company',
+    });
+  } catch (err) {
+    return [];
+  }
+}
+
 export const DISCONNECT_USER = 'DISCONNECT_USER';
 
 export function disconnectUser() {
