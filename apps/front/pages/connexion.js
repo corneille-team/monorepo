@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { usersRolesType } from 'lib-enums';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 import { imagesLinks, PATHS, REGEX_EMAIL } from '../src/utils';
 import theme from '../src/styles/theme';
@@ -77,6 +78,8 @@ const ColorLink = styled.span`
 const Register = () => {
   const router = useRouter();
 
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [email, setEmail] = useState('');
@@ -122,22 +125,25 @@ const Register = () => {
   return (
     <Container>
       <Logo src={imagesLinks.logos.full} alt={'Dreamtone'} />
-      <h6>Heureux de revoir</h6>
-      <LitteTitle>Aucune carte bancaire demandée</LitteTitle>
+      <h6>{t('common:connexion.welcome_back')}</h6>
+      <LitteTitle>{t('common:connexion.subtitle')}</LitteTitle>
       <form onSubmit={register}>
-        <label>Adresse e-mail</label>
+        <label>{t('common:connexion.email')}</label>
         <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-        <label>mot de passe</label>
+        <label>{t('common:connexion.password')}</label>
         <Input value={password} onChange={(e) => setPassword(e.target.value)} type={'password'} />
-        {error && <p style={{ color: theme.colors.red }}>*Erreur lors de l&apos;inscription</p>}
 
         <ButtonSubmit type="submit" disabled={!email || !REGEX_EMAIL.test(email) || !password}>
+          {t('common:connexion.sign_in')}
           {isLoading && <Spinner />}
-          Connexion
         </ButtonSubmit>
       </form>
+
       <Redirect>
-        Pas encore inscrit ? <ColorLink>Inscrivez-vous</ColorLink>
+        {t('common:connexion.not_registered')}{' '}
+        <Link href={PATHS.REGISTER}>
+          <ColorLink>{t('common:connexion.sign_up')}</ColorLink>
+        </Link>
       </Redirect>
     </Container>
   );

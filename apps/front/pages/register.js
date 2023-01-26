@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 import { imagesLinks, PATHS, REGEX_EMAIL } from '../src/utils';
 import theme from '../src/styles/theme';
@@ -116,6 +117,8 @@ const LogoCompany = styled.img`
 const Register = () => {
   const router = useRouter();
 
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [name, setName] = useState('');
@@ -130,8 +133,8 @@ const Register = () => {
 
     setIsLoading(true);
 
-    let first_name = name.split(' ')[0];
-    let last_name = name.slice(first_name.length, name.length);
+    const first_name = name.split(' ')[0];
+    const last_name = name.slice(first_name.length, name.length);
 
     callApi({
       method: 'POST',
@@ -168,47 +171,51 @@ const Register = () => {
     <Container>
       <Left>
         <Logo src={imagesLinks.logos.full} alt="logo dreamtone" />
-        <h6>L&apos;alternative moins chers</h6>
-        <LitteTitle>Aucune carte bancaire demandée</LitteTitle>
+        <h6>{t('common:register.alternative')}</h6>
+        <LitteTitle>{t('common:register.subtitle')}</LitteTitle>
         <form onSubmit={callRegister}>
-          <label>Nom complet</label>
+          <label>{t('common:register.name')}</label>
           <input
             type="nom complet"
             name="nom complet"
             onChange={(event) => setName(event.target.value)}
             value={name}
           />
-          <label>Adresse e-mail</label>
+          <label>{t('common:register.email')}</label>
           <input
             type="email"
             onChange={(event) => setEmail(event.target.value)}
             name="Email"
             value={email}
           />
-          <label>Mot de passe</label>
+          <label>{t('common:register.password')}</label>
           <input
             type="password"
             onChange={(event) => setPassword(event.target.value)}
             name="Password"
             value={password}
           />
-          <label>Confirmer votre Mot de passe</label>
+          <label>{t('common:register.confirm')}</label>
           <input
             type="password"
             onChange={(event) => setRepeatedPassword(event.target.value)}
             name="Password"
             value={repeatedPassword}
           />
-          <ButtonSubmit type="submit">S&apos;inscrire gratuitement </ButtonSubmit>
-          <Link href={PATHS.CONNEXION}>
-            <LinkConnection>
-              Vous avez déjà un compte ? <ColorLink>Se connecter</ColorLink>
-            </LinkConnection>
-          </Link>
+          <ButtonSubmit type="submit">
+            {t('common:register.sign_up')}
+            {isLoading && <Spinner />}
+          </ButtonSubmit>
+          <LinkConnection>
+            {t('common:register.already_sign_up')}{' '}
+            <Link href={PATHS.CONNEXION}>
+              <ColorLink> {t('common:register.sign_in')}</ColorLink>
+            </Link>
+          </LinkConnection>
         </form>
       </Left>
       <Right>
-        <h6>Ils sont déjà nombreux à nous faire confiance : freelances, agences et entreprises</h6>
+        <h6>{t('common:register.they_trust_us')}</h6>
         <LogoDisplay>
           <LogoCompany src={imagesLinks.companies.logo.alma} alt="logo alma" />
           <LogoCompany src={imagesLinks.companies.logo.blablacar} alt="logo blablacar" />
