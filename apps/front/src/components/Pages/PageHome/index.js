@@ -13,8 +13,6 @@ const ToolsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 40px;
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
   gap: 20px;
 `;
 

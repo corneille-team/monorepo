@@ -62,18 +62,23 @@
       "actual_plan": "Actual plan",
       "price": "Price",
       "quality": "Premium",
+      "your_plan": "Your plan",
       "free_plan": {
         "plan": "Free",
         "title": "Try Dreamtone for free",
         "description": "Free trial of Dreamtone features to help you get a taste of AI writing",
         "per_what": "For a new user",
-        "try_description": "Try all the features to find what works best for you."
+        "try_description": "Try all the features to find what works best for you",
+        "already_used": "Already used"
       },
       "premium_plan": {
         "plan": "Premium",
         "title": "For trade pros",
         "description": "\nAwesome tools to help you write and optimize your day-to-day business performance",
-        "per_what": "Per month"
+        "per_what": "Per month",
+        "annual": "Annual",
+        "monthly": "Monthly",
+        "save": "Save"
       },
       "arguments": {
         "ai_sales_templates": "AI Sales templates",
@@ -90,7 +95,7 @@
       "remaining_invite": "Remaining invite",
       "remaining_invites": "Remaining invites",
       "confirm": "Confirm"
-    }
+
   },
   "tools": {
     "added_value_extractor": {

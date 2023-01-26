@@ -127,14 +127,17 @@ const Topbar = styled.div`
   align-items: center;
 `;
 
+const ContentContainer = styled.div`
+  width: calc(100vw - 250px);
+  background-color: white;
+  overflow: hidden;
+`;
+
 const Content = styled.div`
   height: calc(100vh - 70px);
-  width: calc(100vw - 250px);
   max-width: 1400px;
-  background-color: white;
-  border-radius: 12px 12px 0 0;
-  padding: 30px;
-  overflow-y: hidden;
+  padding: 30px 30px 50px 30px;
+  overflow-y: auto;
 `;
 
 const User = styled.div`
@@ -243,7 +246,7 @@ const LayoutWithSidebar = ({ title, path, children }) => {
           </Link>
         </div>
       </Sidebar>
-      <div>
+      <ContentContainer>
         <TopbarContainer>
           <Topbar>
             <Title>{title}</Title>
@@ -260,7 +263,7 @@ const LayoutWithSidebar = ({ title, path, children }) => {
           </Topbar>
         </TopbarContainer>
         <Content>{children}</Content>
-      </div>
+      </ContentContainer>
       {showCreateProject && <ModalCreateProject handleClose={() => setShowCreateProject(false)} />}
     </Container>
   );

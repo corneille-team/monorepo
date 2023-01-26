@@ -8,6 +8,7 @@ import Style from '../style';
 import theme from '../../../../styles/theme';
 import { imagesLinks } from '../../../../utils';
 import Slider from '../../../Slider';
+import Switch from '../../../Switch';
 
 const Button = styled.button`
   position: relative;
@@ -66,10 +67,6 @@ const Plans = styled.div`
   }
 `;
 
-const PlansHeader = styled.div`
-  margin-bottom: 80px;
-`;
-
 const PlansHeaderContent = styled.div`
   height: 70px;
   display: flex;
@@ -97,22 +94,22 @@ const PlansArgument = styled.div`
 const offers = [
   {
     words: 19000,
-    price: 7.67,
+    price: 9,
     seats: 1,
   },
   {
     words: 75000,
-    price: 20.67,
+    price: 24,
     seats: 5,
   },
   {
     words: 160000,
-    price: 42.67,
+    price: 51,
     seats: 10,
   },
   {
     words: 350000,
-    price: 84.67,
+    price: 99,
     seats: 10,
   },
 ];
@@ -123,6 +120,10 @@ const SettingsPlanAndBilling = ({ user, company }) => {
   const isPremium = () => company?.subscription?.plan === subscriptionsType.premium;
 
   const [words, setWords] = useState(0);
+  const [annual, setAnnual] = useState(false);
+
+  const applyReduction = (price) =>
+    annual ? Math.ceil(price - Math.ceil(price * 0.25)) - 0.33 : price;
 
   return (
     <Style.CenteredContainer>
@@ -147,13 +148,13 @@ const SettingsPlanAndBilling = ({ user, company }) => {
 
       <Plans>
         <Style.Section>
-          <PlansHeader>
+          <div style={{ marginBottom: '80px' }}>
             <h6>{t('common:settings.plan_and_billing.free_plan.title')}</h6>
             <PlansHeaderContent>
               <p>{t('common:settings.plan_and_billing.free_plan.description')}</p>
               <span>{t('common:settings.plan_and_billing.free_plan.try_description')}</span>
             </PlansHeaderContent>
-          </PlansHeader>
+          </div>
           <div style={{ marginBottom: '20px' }}>
             <h6 style={{ margin: 0 }}>0 €</h6>
             <span>{t('common:settings.plan_and_billing.free_plan.per_what')}</span>
@@ -168,7 +169,11 @@ const SettingsPlanAndBilling = ({ user, company }) => {
               {t('common:words')} - 5 000
             </span>
           </div>
-          <Button disabled>{t('common:try')}</Button>
+          <Button disabled>
+            {isPremium()
+              ? t('common:settings.plan_and_billing.already_used')
+              : t('common:settings.plan_and_billing.your_plan')}
+          </Button>
           <PlansArgument>
             <img src={imagesLinks.icons.check} alt={'templates'} />
             <span>10+ {t('common:settings.plan_and_billing.arguments.ai_sales_templates')}</span>
@@ -180,19 +185,49 @@ const SettingsPlanAndBilling = ({ user, company }) => {
         </Style.Section>
 
         <Style.Section>
-          <PlansHeader>
+          <div style={{ marginBottom: '32px' }}>
             <h6>{t('common:settings.plan_and_billing.premium_plan.title')}</h6>
             <PlansHeaderContent>
               <p>{t('common:settings.plan_and_billing.premium_plan.description')}</p>
             </PlansHeaderContent>
-          </PlansHeader>
-          <div style={{ marginBottom: '20px' }}>
-            <h6 style={{ margin: 0 }}>{offers[words]?.price} €</h6>
-            <span>{t('common:settings.plan_and_billing.premium_plan.per_what')}</span>
+          </div>
+          <div
+            style={{
+              marginBottom: '20px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                columnGap: '10px',
+                alignItems: 'center',
+                marginBottom: '20px',
+              }}
+            >
+              <span>{t('common:settings.plan_and_billing.premium_plan.monthly')}</span>
+              <Switch value={annual} setValue={setAnnual} />
+              <span>{t('common:settings.plan_and_billing.premium_plan.annual')}</span>
+              <div
+                style={{
+                  backgroundColor: theme.colors.blue,
+                  borderRadius: '6px',
+                  padding: '0 6px',
+                }}
+              >
+                <span style={{ color: 'white' }}>
+                  {t('common:settings.plan_and_billing.premium_plan.save')?.toUpperCase()} 25%
+                </span>
+              </div>
+            </div>
+            <div>
+              <h6 style={{ margin: 0 }}>{applyReduction(offers[words]?.price)} €</h6>
+              <span>{t('common:settings.plan_and_billing.premium_plan.per_what')}</span>
+            </div>
           </div>
           <Slider
             min={19000}
-            max={2000000}
+            max={350000}
             value={words}
             setValue={setWords}
             markers={offers?.map((offer) => ({ value: offer.words, label: 'lol' }))}

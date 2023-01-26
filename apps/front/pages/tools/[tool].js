@@ -245,7 +245,7 @@ const Tools = () => {
         <Content>
           <ToolHeader>
             <ToolName>
-              <img src={tool.img} alt={'tool icon'} />
+              <img src={tool?.img} alt={'tool icon'} />
               <h5>{translation(`tools.${router.query.tool}`)}</h5>
             </ToolName>
             <Link href={PATHS.HOME}>
