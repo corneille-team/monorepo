@@ -22,8 +22,8 @@ export const GlobalStyle = createGlobalStyle`
   label {
     color: ${theme.colors.blueText};
     font-weight: 300;
-    margin-bottom: 5px;
     font-size: 12px;
+    line-height: 24px;
   }
   
   input {

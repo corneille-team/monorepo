@@ -27,6 +27,15 @@ export const imagesLinks = {
     trending_arrow: '/icons/trending_arrow.svg',
     logout: '/icons/logout.svg',
   },
+  companies: {
+    logo: {
+      alma: '/companies/logo_alma.svg',
+      blablacar: '/companies/logo_blablacar.svg',
+      jobteaser: '/companies/logo_jobteaser.svg',
+      payfit: '/companies/logo_payfit.svg',
+      swile: '/companies/logo_swile.svg',
+    },
+  },
   tools: {
     cta: '/tools/cta.svg',
     youtube: '/tools/youtube.svg',

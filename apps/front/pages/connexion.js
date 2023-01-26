@@ -14,50 +14,63 @@ import { deviceMedia, deviceSizes } from '../src/styles/helper';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  width: 450px;
+  max-width: 450px;
+  padding: 40px;
+  margin: auto;
   height: 100vh;
-  width: 100vw;
-  background-color: rgb(244, 244, 244);
+  h6 {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  ${deviceMedia[deviceSizes.tablet]`
+    width: 100%;
+  `}
 `;
 
 const Logo = styled.img`
-  height: 40px;
-  margin-bottom: 20px;
-  position: absolute;
-  top: -45px;
-  left: 50%;
-  transform: translateX(-50%);
-`;
-
-const RegisterContainer = styled.div`
-  position: relative;
-  background-color: white;
-  justify-content: center;
-  border-radius: 16px;
-  padding: 50px;
-  max-width: 400px;
-  margin: 20px;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
-
-  ${deviceMedia[deviceSizes.phone]`
-    padding: 25px;
-  `};
+  margin-bottom: 30px;
+  width: 140px;
+  height: 45px;
 `;
 
 const Input = styled.input`
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+`;
+
+const LitteTitle = styled.p`
+  margin-bottom: 30px;
 `;
 
 const Redirect = styled.p`
-  text-align: right;
-  margin-bottom: 10px;
-
   a {
     &:hover {
       color: ${theme.colors.gray};
       text-decoration: underline;
     }
+  }
+`;
+
+const ButtonSubmit = styled.button`
+  background-color: ${theme.colors.darkblue};
+  border-radius: 6px;
+  height: 45px;
+  margin-top: 10px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  width: calc(100% - 0px);
+`;
+
+const ColorLink = styled.span`
+  color: rgb(65, 118, 214);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  :hover {
+    text-decoration: underline;
   }
 `;
 
@@ -71,7 +84,9 @@ const Register = () => {
 
   const [error, setError] = useState(false);
 
-  const register = () => {
+  const register = (e) => {
+    e.preventDefault();
+
     setError(false);
     setIsLoading(true);
 
@@ -106,33 +121,24 @@ const Register = () => {
 
   return (
     <Container>
-      <RegisterContainer>
-        <Logo src={imagesLinks.logos.full} alt={'Dreamtone'} />
-
-        <h5 style={{ textAlign: 'center' }}>Connexion</h5>
-
-        <Input placeholder={'Email'} value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input
-          placeholder={'Mot de passe'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type={'password'}
-        />
-        <Redirect>
-          Pas inscrit ? <Link href={PATHS.REGISTER}>Inscrivez-vous</Link>
-        </Redirect>
-
+      <Logo src={imagesLinks.logos.full} alt={'Dreamtone'} />
+      <h6>Heureux de revoir</h6>
+      <LitteTitle>Aucune carte bancaire demandée</LitteTitle>
+      <form onSubmit={register}>
+        <label>Adresse e-mail</label>
+        <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+        <label>mot de passe</label>
+        <Input value={password} onChange={(e) => setPassword(e.target.value)} type={'password'} />
         {error && <p style={{ color: theme.colors.red }}>*Erreur lors de l&apos;inscription</p>}
 
-        <button
-          style={{ width: '100%' }}
-          onClick={register}
-          disabled={!email || !REGEX_EMAIL.test(email) || !password}
-        >
+        <ButtonSubmit type="submit" disabled={!email || !REGEX_EMAIL.test(email) || !password}>
           {isLoading && <Spinner />}
-          Je me connecte
-        </button>
-      </RegisterContainer>
+          Connexion
+        </ButtonSubmit>
+      </form>
+      <Redirect>
+        Pas encore inscrit ? <ColorLink>Inscrivez-vous</ColorLink>
+      </Redirect>
     </Container>
   );
 };
