@@ -10,6 +10,7 @@ function getService(name) {
   switch (name) {
     case toolsType.youtube_script:
       return servicesLib.youtube_script;
+      nvm;
     default:
       return null;
   }

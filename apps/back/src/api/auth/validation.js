@@ -11,6 +11,8 @@ export const authenticateValidation = Joi.object({
 });
 
 export const userSignUpValidation = Joi.object({
+  first_name: Joi.string().required(),
+  last_name: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
 });
