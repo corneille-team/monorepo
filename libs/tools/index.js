@@ -1,5 +1,5 @@
-import { youtube_script } from './youtube_script';
+import { reformulation } from './youtube_script';
 
 export const servicesLib = {
-  youtube_script,
+  youtube_script: reformulation,
 };

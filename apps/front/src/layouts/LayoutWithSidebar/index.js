@@ -134,7 +134,7 @@ const Content = styled.div`
   background-color: white;
   border-radius: 12px 12px 0 0;
   padding: 30px;
-  overflow-y: auto;
+  overflow-y: hidden;
 `;
 
 const User = styled.div`

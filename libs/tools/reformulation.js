@@ -1,6 +1,6 @@
 import { getOpenai, openaiModelAdapter, openaiModelsType } from '../openai';
 
-export function youtube_script(prompt, payload) {
+export function reformulation(prompt, payload) {
   const openai = getOpenai();
 
   const maxTokens = 500;

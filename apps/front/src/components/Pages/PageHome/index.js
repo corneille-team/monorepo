@@ -13,6 +13,9 @@ const ToolsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 40px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  gap: 20px;
 `;
 
 const ToolSelected = styled.div`
@@ -30,17 +33,15 @@ const Tool = styled.div`
   position: relative;
   border: 1px solid ${theme.colors.stroke};
   height: 240px;
-  width: 270px;
+  width: 290px;
   border-radius: 16px;
   padding: 24px;
-  overflow-y: auto;
-  margin-right: 20px;
-  margin-bottom: 20px;
+  overflow-y: visible;
   cursor: pointer;
 
   p {
     color: ${theme.colors.gray};
-    line-height: 1.5;
+    line-height: 1.25rem;
   }
 
   h6 {
@@ -109,29 +110,39 @@ const PageHome = () => {
     all: {
       key: 'all',
       value: t('common:library.list.all'),
+      filter: [],
     },
-    website: {
-      key: 'website',
-      value: t('common:library.list.website'),
+    business_growth: {
+      key: 'business_growth',
+      value: t('common:library.list.business_growth'),
+      filter: ['growth_ideas'],
     },
-    ecommerce: {
-      key: 'ecommerce',
-      value: t('common:library.list.ecommerce'),
-      comingSoon: true,
+    business_needs: {
+      key: 'business_needs',
+      value: t('common:library.list.business_needs'),
+      filter: [
+        'added_value_extractor',
+        'argument_generator',
+        'company_bio',
+        'ice_breaker_generator',
+        'response_generator',
+        'subsidiary_extractor',
+        'tonality_changer',
+      ],
     },
-    articles_and_blogs: {
-      key: 'articles_and_blogs',
-      value: t('common:library.list.articles_and_blogs'),
-      comingSoon: true,
+    com_and_marketing: {
+      key: 'com_and_marketing',
+      value: t('common:library.list.com_and_marketing'),
+      filter: ['cold_email_generator', 'linkedin_post_generator'],
     },
-    others: {
-      key: 'others',
-      value: t('common:library.list.others'),
-      comingSoon: true,
+    strategy: {
+      key: 'strategy',
+      value: t('common:library.list.strategy'),
+      filter: ['company_vision', 'reformulation'],
     },
   };
 
-  const [filter, setFilter] = useState(list.all.value);
+  const [filter, setFilter] = useState(list.all.key);
   const [search, setSearch] = useState('');
 
   const [tool, setTool] = useState(null);
@@ -148,16 +159,18 @@ const PageHome = () => {
       </Search>
       <Tabs list={Object.values(list)} selected={filter} select={setFilter} />
       <ToolsContainer>
-        {Object.values(toolsType)?.map((tool) => (
-          <Tool key={tool} onClick={() => setTool(tool)}>
-            <ToolSelected />
-            <ToolImgContainer>
-              <img src={`/tools/${tool}.svg`} alt={tool} />
-            </ToolImgContainer>
-            <h6>{t(`common:tools.${tool}.title`)}</h6>
-            <p>{t(`common:tools.${tool}.description`)}</p>
-          </Tool>
-        ))}
+        {Object.values(toolsType)
+          ?.filter((t) => !list[filter].filter?.length || list[filter].filter?.includes(t))
+          ?.map((tool) => (
+            <Tool key={tool} onClick={() => setTool(tool)}>
+              <ToolSelected />
+              <ToolImgContainer>
+                <img src={`/tools/${tool}.svg`} alt={tool} />
+              </ToolImgContainer>
+              <h6>{t(`common:tools.${tool}.title`)}</h6>
+              <p>{t(`common:tools.${tool}.description`)}</p>
+            </Tool>
+          ))}
       </ToolsContainer>
 
       {tool && <ModalTool tool={tool} handleClose={() => setTool(null)} />}

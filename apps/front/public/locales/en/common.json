@@ -31,10 +31,10 @@
     "title": "Library",
     "list": {
       "all": "All models",
-      "website": "Website",
-      "ecommerce":  "E-commerce",
-      "articles_and_blogs": "Articles and blogs",
-      "others": "Others"
+      "business_growth":  "Business Growth",
+      "com_and_marketing": "Com and Marketing",
+      "strategy":  "Strategy",
+      "business_needs": "Business Needs"
     },
     "soon": "Soon"
   },
@@ -93,9 +93,53 @@
     }
   },
   "tools": {
-    "youtube_script": {
-      "title": "Youtube script",
-      "description": "Generate scripts for your youtube videos worthy of the best !"
+    "added_value_extractor": {
+      "title":"Adding value extractor",
+      "description":"Our cutting-edge software helps businesses uncover hidden value within their operations, enabling them to maximize their potential and achieve sustainable growth."
+    },
+    "argument_generator": {
+      "title": "Argument generator",
+      "description": "Our argument generation tool helps users construct compelling and persuasive arguments, making it easier to influence and persuade others"
+    },
+    "cold_email_generator": {
+      "title": "Cold Emails",
+      "description": "Our cold email generator creates professional and effective emails that increase the chances of generating interest and opportunities with potential clients"
+    },
+    "company_bio": {
+      "title": "Crafting a bio",
+      "description": "Our company bio crafting service helps businesses present themselves in a professional and engaging manner, telling their unique story and effectively communicating their brand"
+    },
+    "company_vision": {
+      "title": "Crafting a Vision",
+      "description": "Our vision crafting service helps businesses define their future and create a clear, actionable roadmap for success"
+    },
+    "growth_ideas": {
+      "title": "Fueling Growth",
+      "description": "Our growth idea generator helps businesses generate innovative ideas for expansion and growth, keeping them ahead of the curve"
+    },
+    "ice_breaker_generator": {
+      "title": "Breaking the Ice",
+      "description": "Our ice breaker generator creates engaging and attention-grabbing introductions, making it easier to build connections and start conversations"
+    },
+    "linkedin_post_generator": {
+      "title": "LinkedIn Posts",
+      "description": "Our LinkedIn post generator creates professional and engaging content that helps businesses increase their visibility and build their brand on the platform"
+    },
+    "reformulation": {
+      "title": "Reforming Your Approach",
+      "description": "Our reformulation service helps businesses innovate and evolve, giving them the tools to stay ahead of the competition"
+    },
+    "response_generator": {
+      "title": "Responding Effectively",
+      "description": "Our response generation tool helps users communicate effectively and efficiently, enabling them to build and maintain positive relationships"
+    },
+    "subsidiary_extractor": {
+      "title": "Extracting Subsidiaries",
+      "description": "Unlock hidden potential within your subsidiary operations to drive growth and informed decisions"
+    },
+    "tonality_changer": {
+      "title": "Changing Tonality",
+      "description": "Our tonality changing service helps businesses adapt their communication style to different audiences, ensuring that their message is received and understood"
     }
   },
   "languages": {
