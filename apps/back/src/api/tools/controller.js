@@ -47,8 +47,14 @@ async function useTool(req, res) {
     n: req.query.output,
   };
 
+  console.log(req.query);
+
   if (req.query.linkedin_url) {
     const { data } = await axios({
+      headers: {
+        Authorization: 'Bearer BumvUVF_1DBAOjVo9txFdw',
+      },
+      url: 'https://nubela.co/proxycurl/api/v2/linkedin',
       method: 'GET',
       params: {
         url: req.query.linkedin_url,
@@ -59,21 +65,22 @@ async function useTool(req, res) {
       },
     });
 
-    payload.linkedinData = `${data.full_name}, ${data.occupation}, ${
+    payload.linkedin_data = `${data.full_name}, ${data.occupation}, ${
       data.summary
-    }. Experiences: ${data.experiences.map((exp) => exp.title + ' at ' + exp.company).join(', ')}`;
-
-    console.log({ linkedinData: payload.linkedinData, length: payload.linkedinData.length });
+    }. Experiences: ${data.experiences
+      .map((exp) => exp.title + ' at ' + exp.company)
+      .join(', ')}`.replace(/\n/g, ' ');
   }
 
   const prompt = promptByToolName(toolName, payload);
+
+  console.log(prompt);
 
   let completion;
   try {
     const { data } = await uesToolService(prompt, payload);
     completion = data;
   } catch (err) {
-    console.log(err);
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .send({ error: 'Request to IA Failed: ' + err });

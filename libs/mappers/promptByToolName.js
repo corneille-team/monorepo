@@ -12,7 +12,7 @@ export const promptByToolName = (tool, payload) => {
         payload.content
       }${always(payload)}`;
     case toolsType.cold_email_generator:
-      return `write an cold email from this linkedin user: ${payload.linkedinData}${always(
+      return `write an cold email from this linkedin user: ${payload.linkedin_data}${always(
         payload,
       )}`;
     case toolsType.company_bio:
@@ -26,9 +26,9 @@ export const promptByToolName = (tool, payload) => {
         payload.content
       } ${always(payload)}`;
     case toolsType.ice_breaker_generator:
-      return `write a linkedin ice breaker from this linkedin user: ${payload.linkedinData}${always(
-        payload,
-      )}`;
+      return `write a linkedin ice breaker from this linkedin user: ${
+        payload.linkedin_data
+      }${always(payload)}`;
     case toolsType.linkedin_post_generator:
       return `write a linkedin post from this instructions: ${payload.content}.${always(payload)}`;
     case toolsType.reformulation:

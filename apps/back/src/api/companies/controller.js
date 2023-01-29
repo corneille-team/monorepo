@@ -1,15 +1,6 @@
 import httpStatus from 'http-status';
-import Stripe from 'stripe';
-import { paymentsStatusType, settingsCategories } from 'lib-enums';
 
 import { companiesRepository } from '../../repositories';
-import configs from '../../configs';
-import { formatAmountForStripe } from '../../utils/stripe';
-import { plansType } from '../../../../../libs/plans';
-
-const stripe = new Stripe(configs.services.stripe.secretKey, {
-  apiVersion: '2022-08-01',
-});
 
 async function me(req, res) {
   const { user } = req.locals;
@@ -63,71 +54,6 @@ async function removeHistory(req, res) {
   });
 
   return res.send(updatedCompany);
-}
-
-async function recharge(req, res) {
-  const { user } = req.locals;
-
-  const company = await companiesRepository.getCompanyById(user.company_id);
-  if (!company) {
-    return res.status(httpStatus.NOT_FOUND).send({ error: 'Company not found' });
-  }
-
-  if (company.owner_id !== String(user._id)) {
-    return res.status(httpStatus.FORBIDDEN).send({ error: 'You need to be owner of the company' });
-  }
-
-  const plan = plansType[req.body.plan];
-  const price = req.body.price;
-
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: formatAmountForStripe(price, 'eur'),
-    currency: 'eur',
-    payment_method_types: ['card'],
-  });
-
-  return res.send({
-    clientSecret: paymentIntent.client_secret,
-  });
-}
-
-async function subscribeNewPlan(req, res) {
-  const { user } = req.locals;
-
-  const company = await companiesRepository.getCompanyById(user.company_id);
-  if (!company) {
-    return res.status(httpStatus.NOT_FOUND).send({ error: 'Company not found' });
-  }
-
-  if (company.owner_id !== String(user._id)) {
-    return res.status(httpStatus.FORBIDDEN).send({ error: 'You need to be owner of the company' });
-  }
-
-  const price = req.body.price;
-
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: formatAmountForStripe(price, 'eur'),
-    currency: 'eur',
-    payment_method_types: ['card'],
-  });
-
-  return res.send({
-    clientSecret: paymentIntent.client_secret,
-  });
-}
-
-async function subscribeDone(req, res) {
-  const paymentIntent = await stripe.paymentIntents.retrieve(req.query.payment_intent);
-
-  if (paymentIntent.status !== paymentsStatusType.succeeded) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).end();
-  } else if ({}.payment_status === paymentsStatusType.succeeded) {
-    return res.status(httpStatus.CONFLICT).end();
-  }
-
-  return res.redirect(
-    `${configs.frontUrl}/settings?category=${settingsCategories.plan_and_billing}`,
-  );
 }
 
 export default {

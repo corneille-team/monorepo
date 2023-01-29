@@ -30,7 +30,7 @@ const Button = styled.button`
   margin-top: 30px;
 `;
 
-const ModalSubscribe = ({ offer, handleClose }) => {
+const ModalSubscribe = ({ handleClose }) => {
   const { t } = useTranslation();
 
   return (
@@ -39,8 +39,6 @@ const ModalSubscribe = ({ offer, handleClose }) => {
         <h6>{t('common:upgrade_plan')}</h6>
         <img src={imagesLinks.icons.close} alt={'close'} onClick={handleClose} />
       </Header>
-
-      <div></div>
 
       <Button>{t('common:confirm')}</Button>
     </Modal>

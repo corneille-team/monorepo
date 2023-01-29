@@ -118,15 +118,13 @@ const Save = styled.span`
 
 const offers = Object.values(plansType);
 
-const SettingsPlanAndBilling = ({ user, company }) => {
+const SettingsPlanAndBilling = ({ company }) => {
   const { t } = useTranslation();
 
   const isPremium = () => company?.subscription?.plan;
 
   const [words, setWords] = useState(0);
   const [annual, setAnnual] = useState(false);
-
-  const [showBilling, setShowBilling] = useState(false);
 
   const applyReduction = (price) =>
     annual ? Math.ceil(price - Math.ceil(price * 0.2)) - 0.33 : price;
