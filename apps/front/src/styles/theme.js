@@ -4,7 +4,6 @@ export const colors = {
   blueDeep: '#0C1629',
   blueText: '#091747',
   blueLight: 'rgba(26, 118, 213, 0.15)',
-  darkblue: '#0D172B',
   green: '#00B388',
   yellow: '#FBF3AD',
   red: '#EF0000',
@@ -13,6 +12,7 @@ export const colors = {
   gray: '#606A8B',
   grayDark: '#7B7B7B',
   grayLight: '#F4F4F4',
+  grayText: '#A5A5A5',
   stroke: '#E5E7EB',
   placeholder: '#A7ABBC',
 };

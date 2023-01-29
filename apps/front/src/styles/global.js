@@ -85,7 +85,7 @@ export const GlobalStyle = createGlobalStyle`
     font-size: 14px;
     padding: 10px;
     border: none;
-    height: 35px;
+    height: 45px;
   }
 
   p {

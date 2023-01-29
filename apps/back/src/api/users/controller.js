@@ -64,7 +64,7 @@ async function changePassword(req, res) {
 async function getCompanyMembers(req, res) {
   const { user } = req.locals;
 
-  const company = await companiesRepository.getCompanyByUserId(user._id);
+  const company = await companiesRepository.getCompanyById(user.company_id);
   if (!company) {
     return res.status(httpStatus.NOT_FOUND).end();
   }

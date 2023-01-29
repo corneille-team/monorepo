@@ -1,10 +1,16 @@
 export const configs = {
   baseUrl: process.env.BASE_URL || 'http://localhost:3001/',
+  frontUrl: process.env.FRONT_URL || 'http://localhost:3000/',
   authorizedUrls: process.env.AUTHORIZED_URLS || 'http://localhost:3000',
   port: process.env.PORT || 3001,
   environment: process.env.ENVIRONMENT || 'local',
   freeTrialWords: process.env.FREE_TRIAL_WORDS || 5000,
   services: {
+    stripe: {
+      secretKey:
+        process.env.STRIPE_SECRET_KEY ||
+        'sk_test_51KrhBnK7B0lK4WDZJIQJ2OToG1hgQP0tN1Wz9gGGqsjm3NDUyQvdA8T7qgpoQPA8TpqtXIgxFUk6bA5znh2T1c3900mYlMq8kq',
+    },
     bcrypt: {
       salt_rounds: process.env.SALT_ROUNDS || 10,
     },

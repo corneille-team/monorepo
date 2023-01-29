@@ -3,16 +3,29 @@ import App from 'next/app';
 import Head from 'next/head';
 import { ThemeProvider } from 'styled-components';
 import { appWithTranslation } from 'next-i18next';
+import { ToastContainer } from 'react-toastify';
 
 import theme from '../src/styles/theme';
 import { wrapper } from '../src/store';
 import { GlobalStyle } from '../src/styles/global';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-awesome-animated-number/dist/index.css';
-import 'react-loading-skeleton/dist/skeleton.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 class MyApp extends App {
+  componentDidMount() {
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = process.env.crispWebsiteId;
+    window.$crisp.push(['safe', true]);
+    (() => {
+      const d = document;
+      const s = d.createElement('script');
+      s.src = 'https://client.crisp.chat/l.js';
+      s.async = true;
+      d.getElementsByTagName('head')[0].appendChild(s);
+    })();
+  }
+
   render() {
     const { Component, pageProps } = this.props;
 
@@ -32,6 +45,7 @@ class MyApp extends App {
         <ThemeProvider theme={theme}>
           <GlobalStyle />
           <Component {...pageProps} />
+          <ToastContainer />
         </ThemeProvider>
       </>
     );

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
-import { settingsCategories, subscriptionsType } from 'lib-enums';
+import { settingsCategories } from 'lib-enums';
 import { useTranslation } from 'next-i18next';
 
 import { imagesLinks, PATHS } from '../../utils';
@@ -105,6 +105,7 @@ const ButtonUpgrade = styled.button`
     position: absolute;
     right: 20px;
     height: 20px;
+    width: 20px;
   }
 `;
 
@@ -138,6 +139,8 @@ const Content = styled.div`
   max-width: 1400px;
   padding: 30px 30px 50px 30px;
   overflow-y: auto;
+
+  ${(props) => props.fluid && 'padding: 30px 0 50px 0'};
 `;
 
 const User = styled.div`
@@ -162,20 +165,7 @@ const Title = styled.h5`
   font-weight: 600;
 `;
 
-const ButtonNewProject = styled.button`
-  width: 100%;
-  font-weight: 500;
-  font-size: 13px;
-  margin-bottom: 60px;
-
-  img {
-    height: 16px;
-    width: 16px;
-    margin-right: 10px;
-  }
-`;
-
-const LayoutWithSidebar = ({ title, path, children }) => {
+const LayoutWithSidebar = ({ title, path, contentFluid, children }) => {
   const { t } = useTranslation();
 
   const user = useSelector((store) => store.user);
@@ -193,37 +183,30 @@ const LayoutWithSidebar = ({ title, path, children }) => {
             </LogoContainer>
           </Link>
 
-          <ButtonNewProject>
-            <img src={imagesLinks.icons.plus_circle} alt={'new project'} />
-            {t('common:new_project')}
-          </ButtonNewProject>
-
-          <Link href={PATHS.HOME}>
-            <Direction selected={path === PATHS.HOME}>
-              <div>
-                <img src={imagesLinks.icons.features} alt={'features'} />
-              </div>
-              <p>{t('common:sidebar.library')}</p>
-            </Direction>
-          </Link>
-          <Link href={PATHS.SAVED}>
-            <Direction selected={path === PATHS.SAVED}>
-              <div>
-                <img src={imagesLinks.icons.saved} alt={'saved'} />
-              </div>
-              <p>{t('common:sidebar.saved')}</p>
-            </Direction>
-          </Link>
+          <div style={{ marginTop: '100px' }}>
+            <Link href={PATHS.HOME}>
+              <Direction selected={path === PATHS.HOME}>
+                <div>
+                  <img src={imagesLinks.icons.features} alt={'features'} />
+                </div>
+                <p>{t('common:sidebar.library')}</p>
+              </Direction>
+            </Link>
+            <Link href={PATHS.SAVED}>
+              <Direction selected={path === PATHS.SAVED}>
+                <div>
+                  <img src={imagesLinks.icons.saved} alt={'saved'} />
+                </div>
+                <p>{t('common:sidebar.saved')}</p>
+              </Direction>
+            </Link>
+          </div>
         </div>
 
         <div>
           <UpgradeLastWords>
-            {company?.subscription?.plan === subscriptionsType.free && (
-              <span>{t('common:plans.trial')}</span>
-            )}
-            {company?.subscription?.plan === subscriptionsType.premium && (
-              <span>{t('common:plans.premium')}</span>
-            )}
+            {!company?.subscription?.plan && <span>{t('common:plans.trial')}</span>}
+            {company?.subscription?.plan && <span>{t('common:plans.premium')}</span>}
             <p>
               {t('common:sidebar.words')} - {company?.subscription?.words}
             </p>
@@ -262,7 +245,7 @@ const LayoutWithSidebar = ({ title, path, children }) => {
             </UserPopover>
           </Topbar>
         </TopbarContainer>
-        <Content>{children}</Content>
+        <Content fluid={contentFluid}>{children}</Content>
       </ContentContainer>
       {showCreateProject && <ModalCreateProject handleClose={() => setShowCreateProject(false)} />}
     </Container>

@@ -1,30 +1,21 @@
-import { toolsType, subscriptionsType, usageStatusType } from 'lib-enums';
+import { toolsType, usageStatusType } from 'lib-enums';
 import httpStatus from 'http-status';
+import axios from 'axios';
 
-import { servicesLib } from '../../../../../libs/tools';
+import { uesToolService } from '../../../../../libs/tools';
 import { companiesRepository } from '../../repositories';
 import { countWords } from '../../../../../libs/utils';
 import { promptByToolName } from '../../../../../libs/mappers';
 
-function getService(name) {
-  switch (name) {
-    case toolsType.youtube_script:
-      return servicesLib.youtube_script;
-      nvm;
-    default:
-      return null;
-  }
-}
-
 async function useTool(req, res) {
   const { user } = req.locals;
 
-  const company = await companiesRepository.getCompanyByUserId(user._id);
+  const company = await companiesRepository.getCompanyById(user.company_id);
   if (!company) {
     return res.status(httpStatus.NOT_FOUND).send({ error: 'Company not found' });
   }
 
-  if (company.subscription.plan === subscriptionsType.free && company.subscription.words <= 0) {
+  if (company.subscription.words <= 0) {
     return res.status(httpStatus.UNPROCESSABLE_ENTITY).send({ error: 'Not enough words' });
   }
 
@@ -42,8 +33,7 @@ async function useTool(req, res) {
       .send({ error: 'Prompt cannot be longer than 2000 caracters' });
   }
 
-  const service = getService(toolName);
-  if (!service) {
+  if (!Object.keys(toolsType).includes(toolName)) {
     return res.status(httpStatus.BAD_REQUEST).send({ error: 'Service not found' });
   }
 
@@ -51,15 +41,42 @@ async function useTool(req, res) {
     language: req.query.language,
     subject: req.query.subject,
     tone: req.query.tone,
+    formality: req.query.formality,
+    max_tokens: 3000,
+    user_id: user._id,
     n: req.query.output,
   };
 
+  if (req.query.linkedin_url) {
+    const { data } = await axios({
+      method: 'GET',
+      params: {
+        url: req.query.linkedin_url,
+        fallback_to_cache: 'on-error',
+        use_cache: 'if-present',
+        skills: 'include',
+        inferred_salary: 'include',
+      },
+    });
+
+    payload.linkedinData = `${data.full_name}, ${data.occupation}, ${
+      data.summary
+    }. Experiences: ${data.experiences.map((exp) => exp.title + ' at ' + exp.company).join(', ')}`;
+
+    console.log({ linkedinData: payload.linkedinData, length: payload.linkedinData.length });
+  }
+
   const prompt = promptByToolName(toolName, payload);
 
-  const { data: completion } = await service(prompt, payload);
-
-  if (!completion) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Request Failed' });
+  let completion;
+  try {
+    const { data } = await uesToolService(prompt, payload);
+    completion = data;
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ error: 'Request to IA Failed: ' + err });
   }
 
   const usage = completion.usage;
@@ -69,7 +86,7 @@ async function useTool(req, res) {
     newUsages.push({
       user_id: String(user._id),
       service: toolName,
-      document_name: req.query.document_name,
+      document_name: null,
       prompt,
       results: null,
       tokens_used: usage ? usage.total_tokens : 0,
@@ -92,10 +109,24 @@ async function useTool(req, res) {
   const results = choices.map((d) => ({ text: d.text }));
 
   const newUsages = company.usages || [];
+
+  let documentName = req.query.document_name;
+  if (newUsages.find((u) => u.document_name === documentName && u.service === toolName)) {
+    documentName = null;
+  }
+
   newUsages.push({
     user_id: String(user._id),
     service: toolName,
-    document_name: req.query.document_name,
+    document_name: documentName,
+    input: {
+      subject: req.query.subject,
+      content: req.query.content,
+      language: req.query.language,
+      tone: req.query.tone,
+      formality: req.query.formality,
+      request: req.query.output,
+    },
     prompt,
     results,
     tokens_used: usage ? usage.total_tokens : 0,
@@ -110,7 +141,7 @@ async function useTool(req, res) {
     'subscription.words': lastWords > 0 ? lastWords : 0,
   });
 
-  return res.send({ data: results.map((r) => r.text) });
+  return res.send({ data: results });
 }
 
 export const toolsController = {

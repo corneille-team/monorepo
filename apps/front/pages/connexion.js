@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { usersRolesType } from 'lib-enums';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+import { toast } from 'react-toastify';
 
 import { imagesLinks, PATHS, REGEX_EMAIL } from '../src/utils';
 import theme from '../src/styles/theme';
 import callApi from '../src/middlewares/callApi';
 import Spinner from '../src/components/Spinner';
 import { deviceMedia, deviceSizes } from '../src/styles/helper';
+import LayoutPermissions from '../src/layouts/LayoutPermissions';
 
 const Container = styled.div`
   display: flex;
@@ -22,11 +24,21 @@ const Container = styled.div`
   padding: 40px;
   margin: auto;
   height: 100vh;
+
   h6 {
     font-weight: 700;
     font-size: 18px;
     margin-bottom: 10px;
   }
+
+  input {
+    margin-bottom: 20px;
+  }
+
+  form {
+    margin-top: 30px;
+  }
+
   ${deviceMedia[deviceSizes.tablet]`
     width: 100%;
   `}
@@ -36,14 +48,6 @@ const Logo = styled.img`
   margin-bottom: 30px;
   width: 140px;
   height: 45px;
-`;
-
-const Input = styled.input`
-  margin-bottom: 20px;
-`;
-
-const LitteTitle = styled.p`
-  margin-bottom: 30px;
 `;
 
 const Redirect = styled.p`
@@ -56,21 +60,18 @@ const Redirect = styled.p`
 `;
 
 const ButtonSubmit = styled.button`
-  background-color: ${theme.colors.darkblue};
-  border-radius: 6px;
-  height: 45px;
-  margin-top: 10px;
-  cursor: pointer;
-  margin-bottom: 15px;
-  width: calc(100% - 0px);
+  background-color: ${(props) => (props.disabled ? theme.colors.grayText : theme.colors.blueDeep)};
+  margin: 10px 0 15px 0;
+  width: 100%;
 `;
 
 const ColorLink = styled.span`
-  color: rgb(65, 118, 214);
+  color: ${theme.colors.blue};
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  :hover {
+
+  &:hover {
     text-decoration: underline;
   }
 `;
@@ -85,12 +86,9 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const [error, setError] = useState(false);
-
   const register = (e) => {
     e.preventDefault();
 
-    setError(false);
     setIsLoading(true);
 
     callApi({
@@ -113,39 +111,38 @@ const Register = () => {
       })
       .catch(() => {
         setIsLoading(false);
-        setError(true);
+        toast.error('Erreur innatendue');
         setPassword('');
       });
   };
 
-  useEffect(() => {
-    setError(null);
-  }, [email, password]);
-
   return (
-    <Container>
-      <Logo src={imagesLinks.logos.full} alt={'Dreamtone'} />
-      <h6>{t('common:connexion.welcome_back')}</h6>
-      <LitteTitle>{t('common:connexion.subtitle')}</LitteTitle>
-      <form onSubmit={register}>
-        <label>{t('common:connexion.email')}</label>
-        <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-        <label>{t('common:connexion.password')}</label>
-        <Input value={password} onChange={(e) => setPassword(e.target.value)} type={'password'} />
+    <LayoutPermissions shouldBeDisconnected>
+      <Container>
+        <Logo src={imagesLinks.logos.full} alt={'Dreamtone'} />
+        <h6>{t('common:connexion.welcome_back')}</h6>
+        <p>{t('common:connexion.subtitle')}</p>
+        <form onSubmit={register}>
+          <label>{t('common:connexion.email')}</label>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} />
 
-        <ButtonSubmit type="submit" disabled={!email || !REGEX_EMAIL.test(email) || !password}>
-          {t('common:connexion.sign_in')}
-          {isLoading && <Spinner />}
-        </ButtonSubmit>
-      </form>
+          <label>{t('common:connexion.password')}</label>
+          <input value={password} onChange={(e) => setPassword(e.target.value)} type={'password'} />
 
-      <Redirect>
-        {t('common:connexion.not_registered')}{' '}
-        <Link href={PATHS.REGISTER}>
-          <ColorLink>{t('common:connexion.sign_up')}</ColorLink>
-        </Link>
-      </Redirect>
-    </Container>
+          <ButtonSubmit type="submit" disabled={!email || !REGEX_EMAIL.test(email) || !password}>
+            {t('common:connexion.sign_in')}
+            {isLoading && <Spinner />}
+          </ButtonSubmit>
+        </form>
+
+        <Redirect>
+          {t('common:connexion.not_registered')}{' '}
+          <Link href={PATHS.REGISTER}>
+            <ColorLink>{t('common:connexion.sign_up')}</ColorLink>
+          </Link>
+        </Redirect>
+      </Container>
+    </LayoutPermissions>
   );
 };
 

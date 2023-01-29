@@ -30,3 +30,33 @@ export async function getCompany() {
     };
   }
 }
+
+export const REMOVE_HISTORY_SUCCESS = 'REMOVE_HISTORY_SUCCESS';
+export const REMOVE_HISTORY_FAILURE = 'REMOVE_HISTORY_FAILURE';
+
+export async function removeHistory(completionId) {
+  try {
+    const token = getCookie(COOKIES_NAMES.token);
+    if (!token) {
+      removeCookie(COOKIES_NAMES.token);
+
+      return {
+        type: REMOVE_HISTORY_FAILURE,
+      };
+    }
+
+    const company = await callApi({
+      method: 'DELETE',
+      url: `/companies/history/${completionId}`,
+    });
+
+    return {
+      type: REMOVE_HISTORY_SUCCESS,
+      response: company,
+    };
+  } catch (err) {
+    return {
+      type: REMOVE_HISTORY_FAILURE,
+    };
+  }
+}

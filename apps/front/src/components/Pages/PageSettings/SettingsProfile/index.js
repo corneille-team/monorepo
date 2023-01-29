@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { useTranslation } from 'next-i18next';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 import Style from '../style';
 import theme from '../../../../styles/theme';
@@ -59,7 +60,9 @@ const SettingsProfile = ({ user }) => {
                 first_name: firstName,
                 last_name: lastName,
               }),
-            ).then(() => setIsIdentityLoading(false));
+            )
+              .then(() => setIsIdentityLoading(false))
+              .catch(() => toast.error('Erreur innatendue'));
           }}
         >
           {t('common:modify')}
@@ -123,12 +126,14 @@ const SettingsProfile = ({ user }) => {
                 old_password: oldPassword,
                 new_password: newPassword,
               }),
-            ).then(() => {
-              setIsPasswordLoading(false);
-              setOldPassword('');
-              setNewPassword('');
-              setConfirmationPassword('');
-            });
+            )
+              .then(() => {
+                setIsPasswordLoading(false);
+                setOldPassword('');
+                setNewPassword('');
+                setConfirmationPassword('');
+              })
+              .catch(() => toast.error('Erreur innatendue'));
           }}
         >
           {t('common:modify')}

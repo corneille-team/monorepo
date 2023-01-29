@@ -21,7 +21,7 @@ async function start() {
     console.log(`Welcome on app, port: ${configs.port}`);
 
     await connectOpenai(
-      process.env.OPENAI_API_KEY || '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',
+      process.env.OPENAI_API_KEY || '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',
     );
   } catch (err) {
     console.log(err);

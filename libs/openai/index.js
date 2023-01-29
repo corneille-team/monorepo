@@ -5,7 +5,7 @@ export * from './models';
 let openai;
 export const connectOpenai = (apiKey) => {
   const configuration = new Configuration({
-    apiKey: apiKey,
+    apiKey,
   });
 
   openai = new OpenAIApi(configuration);

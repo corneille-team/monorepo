@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import { subscriptionsType, usersRolesType } from 'lib-enums';
+import { usersRolesType } from 'lib-enums';
 
 import { companiesRepository, usersRepository } from '../../repositories';
 import { compare, createToken, encode } from '../../services';
@@ -50,7 +50,7 @@ async function signUp(req, res) {
     owner_id: String(user._id),
     members_ids: [String(user._id)],
     subscription: {
-      plan: subscriptionsType.free,
+      plan: null,
       words: configs.freeTrialWords,
       seats: 1,
       subscription_date: new Date(),

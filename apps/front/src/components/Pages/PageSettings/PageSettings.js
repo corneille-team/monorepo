@@ -61,7 +61,7 @@ const PageSettings = () => {
         {category === settingsCategories.plan_and_billing && (
           <SettingsPlanAndBilling user={user} company={company} />
         )}
-        {category === settingsCategories.team && <SettingsTeam company={company} />}
+        {category === settingsCategories.team && <SettingsTeam user={user} company={company} />}
       </Content>
     </LayoutWithSidebar>
   );

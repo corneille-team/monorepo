@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
-import { languagesType, tonesType } from 'lib-enums';
-import Skeleton from 'react-loading-skeleton';
-import { TypeAnimation } from 'react-type-animation';
+import { formalitiesType, languagesType, tonesType } from 'lib-enums';
 import copy from 'copy-to-clipboard';
+import { toast } from 'react-toastify';
 
 import theme from '../../styles/theme';
 import { imagesLinks } from '../../utils';
@@ -15,6 +14,7 @@ import Spinner from '../Spinner';
 import { useTool } from '../../actions/tools';
 import { countWords } from '../../../../../libs/utils';
 import { getCompany } from '../../actions/company';
+import { toolsRequiredFields } from '../../../../../libs/tools';
 
 const Header = styled.div`
   display: flex;
@@ -75,8 +75,8 @@ const LastWords = styled.div`
   }
 
   img {
-    height: 14px;
-    width: 14px;
+    height: 20px;
+    width: 20px;
     margin-right: 10px;
   }
 `;
@@ -131,13 +131,32 @@ const Actions = styled.div`
   }
 `;
 
-const OutputSelector = styled.div`
+const RequestSelector = styled.div`
   height: 45px;
   display: flex;
   align-items: center;
   border: 1px solid ${theme.colors.stroke};
   border-radius: 10px;
   padding: 0 15px;
+  column-gap: 20px;
+
+  p {
+    font-size: 16px;
+    width: 20px;
+    height: 25px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+
+    img {
+      width: 8px;
+      height: 8px;
+      cursor: pointer;
+    }
+  }
 
   input {
     padding: 0;
@@ -162,14 +181,7 @@ const OutputSelector = styled.div`
     -moz-appearance: textfield;
   }
 
-  img {
-    margin-right: 20px;
-    width: 16px;
-    height: 16px;
-    transform: rotate(-90deg);
-  }
-
-  p {
+  span {
     font-size: 12px;
   }
 
@@ -271,7 +283,7 @@ const LogoWrapper = styled(Logo)`
   }
 `;
 
-const ModalTool = ({ tool, handleClose }) => {
+const ModalTool = ({ tool, payload, handleClose }) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -281,16 +293,19 @@ const ModalTool = ({ tool, handleClose }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [documentName, setDocumentName] = useState('');
-  const [subject, setSubject] = useState('');
-  const [content, setContent] = useState('');
-  const [language, setLanguage] = useState(languagesType.english);
-  const [tone, setTone] = useState(tonesType.professional);
-  const [output, setOutput] = useState(1);
+  const [documentName, setDocumentName] = useState(payload?.document_name || '');
+  const [linkedinUrl, setLinkedinUrl] = useState(payload?.linkedin_url || '');
+  const [subject, setSubject] = useState(payload?.subject || '');
+  const [content, setContent] = useState(payload?.content || '');
+  const [language, setLanguage] = useState(payload?.language || languagesType.french);
+  const [tone, setTone] = useState(payload?.tone || tonesType.professional);
+  const [formality, setFormality] = useState(payload?.formality || formalitiesType.formal);
+  const [request, setRequest] = useState(payload?.request || 3);
 
   const [error, setError] = useState({
     subject: false,
     content: false,
+    linkedin_url: false,
   });
 
   return (
@@ -304,6 +319,7 @@ const ModalTool = ({ tool, handleClose }) => {
           <LeftContent>
             <Field>
               <LastWords>
+                <img src={imagesLinks.icons.credits} alt={'credits'} />
                 <p>
                   {t(`common:last_words`)}:{' '}
                   <span>
@@ -313,56 +329,90 @@ const ModalTool = ({ tool, handleClose }) => {
               </LastWords>
             </Field>
             <Field>
-              <label>{t('common:document_name')}</label>
               <input
                 value={documentName}
                 onChange={(e) => setDocumentName(e.target.value)}
                 placeholder={t('common:document_name')}
               />
             </Field>
-            <Field>
-              <label>{t('common:subject')}*</label>
-              <input
-                value={subject}
-                onChange={(e) => {
-                  setSubject(e.target.value);
-                  setError({ ...error, subject: !e.target.value });
-                }}
-                placeholder={t('common:placeholder_subject')}
-                style={{ borderColor: error?.subject && theme.colors.red }}
-              />
-              <TextLength>
-                <span>{subject?.length}/300</span>
-              </TextLength>
-            </Field>
-            <Field>
-              <label>{t('common:content')}*</label>
-              <textarea
-                value={content}
-                onChange={(e) => {
-                  setContent(e.target.value);
-                  setError({ ...error, content: !e.target.value });
-                }}
-                placeholder={t('common:placeholder_content')}
-                style={{ borderColor: error?.content && theme.colors.red }}
-              />
-              <TextLength>
-                <span>{content?.length}/600</span>
-              </TextLength>
-            </Field>
+            {toolsRequiredFields[tool]?.linkedin_url && (
+              <Field>
+                <label>{t(`common:tools.${tool}.linkedin_url`)}*</label>
+                <input
+                  value={linkedinUrl}
+                  onChange={(e) => {
+                    setLinkedinUrl(e.target.value);
+                    setError({ ...error, linkedin_url: !e.target.value });
+                  }}
+                  placeholder={'https://linkedin.com/in/username'}
+                  style={{ borderColor: error?.subject && theme.colors.red }}
+                />
+              </Field>
+            )}
+            {toolsRequiredFields[tool]?.subject && (
+              <Field>
+                <label>{t(`common:tools.${tool}.subject`)}*</label>
+                <input
+                  value={subject}
+                  onChange={(e) => {
+                    setSubject(e.target.value);
+                    setError({ ...error, subject: !e.target.value });
+                  }}
+                  placeholder={t('common:placeholder_subject')}
+                  style={{ borderColor: error?.subject && theme.colors.red }}
+                />
+                <TextLength>
+                  <span>{subject?.length}/300</span>
+                </TextLength>
+              </Field>
+            )}
+            {toolsRequiredFields[tool]?.content && (
+              <Field>
+                <label>{t(`common:tools.${tool}.content`)}*</label>
+                <textarea
+                  value={content}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    setError({ ...error, content: !e.target.value });
+                  }}
+                  placeholder={t('common:placeholder_content')}
+                  style={{ borderColor: error?.content && theme.colors.red }}
+                />
+                <TextLength>
+                  <span>{content?.length}/600</span>
+                </TextLength>
+              </Field>
+            )}
             <Field>
               <label>{t('common:language')}</label>
               <Dropdown
                 value={
                   <Language>
-                    <img src={imagesLinks.flags[language]} alt={'language'} />
+                    <img src={`${imagesLinks.flags}/${language}.svg`} alt={'language'} />
                     <p>{t(`common:languages.${language}`)}</p>
                   </Language>
                 }
               >
                 {Object.keys(languagesType)?.map((l) => (
-                  <p key={l} onClick={() => setLanguage(l)}>
-                    {t(`common:languages.${l}`)}
+                  <Language key={l} style={{ padding: '0 20px' }}>
+                    <img src={`${imagesLinks.flags}/${l}.svg`} alt={language} />
+                    <p onClick={() => setLanguage(l)}>{t(`common:languages.${l}`)}</p>
+                  </Language>
+                ))}
+              </Dropdown>
+            </Field>
+            <Field>
+              <label>{t('common:formality')}</label>
+              <Dropdown
+                value={
+                  <Language>
+                    <p>{t(`common:${formality}`)}</p>
+                  </Language>
+                }
+              >
+                {Object.keys(formalitiesType)?.map((fo) => (
+                  <p key={fo} onClick={() => setFormality(fo)}>
+                    {t(`common:${fo}`)}
                   </p>
                 ))}
               </Dropdown>
@@ -385,44 +435,75 @@ const ModalTool = ({ tool, handleClose }) => {
             </Field>
           </LeftContent>
           <Actions>
-            <OutputSelector>
-              <input
-                type={'number'}
-                min={0}
-                max={5}
-                value={output}
-                onChange={(e) => setOutput(e.target.value)}
-              />
-              <img src={imagesLinks.icons.trending_arrow} alt={'arrow'} />
-              <p>{t('common:output')}</p>
-            </OutputSelector>
+            <RequestSelector>
+              <p>{request}</p>
+              <div>
+                <img
+                  src={imagesLinks.icons.arrow}
+                  alt={'arrow up'}
+                  onClick={() => request + 1 < 6 && setRequest((r) => r + 1)}
+                />
+                <img
+                  src={imagesLinks.icons.arrow}
+                  alt={'arrow down'}
+                  onClick={() => request - 1 > 0 && setRequest((r) => r - 1)}
+                  style={{ transform: 'rotate(180deg)' }}
+                />
+              </div>
+              <span>{t('common:requests')}</span>
+            </RequestSelector>
             <button
               onClick={() => {
-                setError({
-                  subject: !subject,
-                  content: !content,
-                });
+                if (company?.subscription?.words < 1) {
+                  toast.error(
+                    "Vous n'avez plus de mots, mettez à niveau votre plan pour continuer",
+                  );
+                  return;
+                }
 
-                if (!isLoading && subject && content) {
+                const newError = {};
+                if (toolsRequiredFields[tool]?.linkedin_url && !linkedinUrl) {
+                  newError.content = true;
+                }
+                if (toolsRequiredFields[tool]?.subject && !subject) {
+                  newError.subject = true;
+                }
+                if (toolsRequiredFields[tool]?.content && !content) {
+                  newError.content = true;
+                }
+
+                setError(newError);
+
+                if (Object.keys(newError).length) {
+                  toast.error('Certains champs requis sont vides');
+                  return;
+                }
+
+                if (!isLoading) {
                   setIsLoading(true);
-                  console.log('HERE');
                   dispatch(
                     useTool(tool, {
                       document_name: documentName,
                       language: language,
+                      linkedin_url: linkedinUrl,
                       subject,
                       content,
+                      formality,
                       tone,
-                      output,
+                      output: request,
                     }),
-                  ).then(() => {
-                    setIsLoading(false);
-                    dispatch(getCompany());
-                  });
+                  )
+                    .then(() => {
+                      setIsLoading(false);
+                      dispatch(getCompany());
+                    })
+                    .catch(() =>
+                      toast.error('Erreur innatendue, vos crédits ne sont pas prélevés'),
+                    );
                 }
               }}
             >
-              {t('common:generate')} {isLoading && <Spinner />}
+              {t(`common:${result ? 'regenerate' : 'generate'}`)} {isLoading && <Spinner />}
             </button>
           </Actions>
         </Left>
@@ -443,15 +524,16 @@ const ModalTool = ({ tool, handleClose }) => {
 
           {!isLoading && result && (
             <div>
-              {result?.map((out, index) => (
-                <Result key={`out_${index}`}>
-                  <p>{out}</p>
+              {result?.map((res, index) => (
+                <Result key={`res_${index}`}>
+                  <p>{res.text}</p>
                   <div>
                     <span>
-                      {countWords(out)} {t('common:words')} / {out?.length} {t('common:characters')}
+                      {countWords(res.text)} {t('common:words')} / {res.text?.length}{' '}
+                      {t('common:characters')}
                     </span>
                     <Copy
-                      onClick={() => copy(out)}
+                      onClick={() => copy(res.text)}
                       src={imagesLinks.icons.content_copy}
                       alt={'copy to clipboard'}
                     />

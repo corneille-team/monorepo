@@ -5,6 +5,7 @@ export const imagesLinks = {
     simple: '/logo.svg',
   },
   icons: {
+    arrow: '/icons/arrow.svg',
     features: '/icons/features.svg',
     letter: '/icons/letter.svg',
     lightning: '/icons/lightning.svg',
@@ -25,6 +26,9 @@ export const imagesLinks = {
     plus_circle: '/icons/plus_circle.svg',
     content_copy: '/icons/content_copy.svg',
     trending_arrow: '/icons/trending_arrow.svg',
+    trash: '/icons/trash.svg',
+    credits: '/icons/credits.svg',
+    sad: '/icons/sad.svg',
     logout: '/icons/logout.svg',
   },
   companies: {
@@ -40,10 +44,7 @@ export const imagesLinks = {
     cta: '/tools/cta.svg',
     youtube: '/tools/youtube.svg',
   },
-  flags: {
-    french: '/flags/french.svg',
-    english: '/flags/english.svg',
-  },
+  flags: '/flags',
   gifs: {
     avatar: '/avatar.gif',
   },

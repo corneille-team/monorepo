@@ -16,4 +16,10 @@ router.post(
   wrapper(companiesController.inviteMember),
 );
 
+router.delete(
+  '/history/:completion_id',
+  tokenMiddleware,
+  wrapper(companiesController.removeHistory),
+);
+
 export default router;

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { subscriptionsType, usersRolesType } from 'lib-enums';
+import { usersRolesType } from 'lib-enums';
 
 import { S3Service } from '../services';
 import { getUsersModel } from '../models';
@@ -48,7 +48,7 @@ async function createUser(payload) {
 
   const user = await UsersModel.create({
     ...payload,
-    subscription: { plan: subscriptionsType.free, tokens: configs.freeTrialTokens },
+    subscription: { plan: null, tokens: configs.freeTrialTokens },
     role: usersRolesType.user,
   });
 

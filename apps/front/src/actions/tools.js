@@ -19,7 +19,9 @@ export async function useTool(tool, data) {
       params: {
         document_name: data?.document_name,
         language: data?.language,
+        linkedin_url: data?.linkedin_url,
         subject: data?.subject,
+        formality: data?.formality,
         content: data?.content,
         tone: data?.tone,
         output: data?.output ? parseInt(data.output) : 0,
@@ -42,5 +44,14 @@ export const RESET_RESULT = 'RESET_RESULT';
 export function resetResult() {
   return {
     type: RESET_RESULT,
+  };
+}
+
+export const CHANGE_RESULT = 'CHANGE_RESULT';
+
+export function changeResult(result) {
+  return {
+    type: CHANGE_RESULT,
+    response: result,
   };
 }

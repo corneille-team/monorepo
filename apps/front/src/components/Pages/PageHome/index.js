@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'next-i18next';
 import { toolsType } from 'lib-enums';
+import { useDispatch } from 'react-redux';
+import FuzzySearch from 'fuzzy-search';
 
 import LayoutWithSidebar from '../../../layouts/LayoutWithSidebar';
 import { imagesLinks, PATHS } from '../../../utils';
 import Tabs from '../../Tabs';
 import theme from '../../../styles/theme';
 import ModalTool from '../../ModalTool';
+import { resetResult } from '../../../actions/tools';
 
 const ToolsContainer = styled.div`
   display: flex;
@@ -104,6 +107,8 @@ const Search = styled.div`
 const PageHome = () => {
   const { t } = useTranslation();
 
+  const dispatch = useDispatch();
+
   const list = {
     all: {
       key: 'all',
@@ -145,6 +150,11 @@ const PageHome = () => {
 
   const [tool, setTool] = useState(null);
 
+  const searcher = (data) =>
+    new FuzzySearch(data, [''], {
+      caseSensitive: true,
+    });
+
   return (
     <LayoutWithSidebar title={t('common:library.title')} path={PATHS.HOME}>
       <Search>
@@ -157,10 +167,19 @@ const PageHome = () => {
       </Search>
       <Tabs list={Object.values(list)} selected={filter} select={setFilter} />
       <ToolsContainer>
-        {Object.values(toolsType)
-          ?.filter((t) => !list[filter].filter?.length || list[filter].filter?.includes(t))
+        {searcher(
+          Object.values(toolsType)?.filter(
+            (t) => !list[filter].filter?.length || list[filter].filter?.includes(t),
+          ),
+        )
+          .search(search?.toLowerCase()?.trim()?.replace(' ', '_'))
           ?.map((tool) => (
-            <Tool key={tool} onClick={() => setTool(tool)}>
+            <Tool
+              key={tool}
+              onClick={() => {
+                dispatch(resetResult()).then(() => setTool(tool));
+              }}
+            >
               <ToolSelected />
               <ToolImgContainer>
                 <img src={`/tools/${tool}.svg`} alt={tool} />

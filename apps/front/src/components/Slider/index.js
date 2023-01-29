@@ -60,6 +60,7 @@ const MarksContainer = styled.div`
 const Mark = styled.div`
   width: 4px;
   height: 10px;
+  border-radius: 12px;
   background-color: ${(props) => (props.selected ? theme.colors.blueDeep : theme.colors.grayLight)};
 `;
 

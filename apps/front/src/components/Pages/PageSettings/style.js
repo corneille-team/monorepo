@@ -3,8 +3,11 @@ import styled, { keyframes } from 'styled-components';
 import theme from '../../../styles/theme';
 
 const CenteredContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   max-width: 900px;
   margin: auto;
+  row-gap: 20px;
 `;
 
 const Section = styled.div`

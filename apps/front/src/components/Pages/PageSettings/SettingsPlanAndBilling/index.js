@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'next-i18next';
-import { subscriptionsType } from 'lib-enums';
 import millify from 'millify';
 
 import Style from '../style';
@@ -9,6 +8,7 @@ import theme from '../../../../styles/theme';
 import { imagesLinks } from '../../../../utils';
 import Slider from '../../../Slider';
 import Switch from '../../../Switch';
+import { plansType } from '../../../../../../../libs/plans';
 
 const Button = styled.button`
   position: relative;
@@ -91,61 +91,75 @@ const PlansArgument = styled.div`
   }
 `;
 
-const offers = [
-  {
-    words: 19000,
-    price: 9,
-    seats: 1,
-  },
-  {
-    words: 75000,
-    price: 24,
-    seats: 5,
-  },
-  {
-    words: 160000,
-    price: 51,
-    seats: 10,
-  },
-  {
-    words: 350000,
-    price: 99,
-    seats: 10,
-  },
-];
+const AnnualSwitchContainer = styled.div`
+  position: relative;
+  width: fit-content;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  column-gap: 10px;
+  align-items: center;
+
+  span {
+    font-weight: 500;
+  }
+`;
+
+const Save = styled.span`
+  position: absolute;
+  right: 0;
+  transform: translateX(120%);
+  background-color: ${theme.colors.blue};
+  font-weight: 600;
+  color: white;
+  border-radius: 20px;
+  padding: 2px 10px;
+`;
+
+const offers = Object.values(plansType);
 
 const SettingsPlanAndBilling = ({ user, company }) => {
   const { t } = useTranslation();
 
-  const isPremium = () => company?.subscription?.plan === subscriptionsType.premium;
+  const isPremium = () => company?.subscription?.plan;
 
   const [words, setWords] = useState(0);
   const [annual, setAnnual] = useState(false);
 
+  const [showBilling, setShowBilling] = useState(false);
+
   const applyReduction = (price) =>
-    annual ? Math.ceil(price - Math.ceil(price * 0.25)) - 0.33 : price;
+    annual ? Math.ceil(price - Math.ceil(price * 0.2)) - 0.33 : price;
 
   return (
     <Style.CenteredContainer>
-      <Style.Section>
-        <p style={{ margin: 0 }}>
-          {t('common:settings.plan_and_billing.actual_plan')}:{' '}
-          {t(`common:plans.${isPremium() ? 'premium' : 'trial'}`)}
-        </p>
-        <Price>
-          <span>
-            {t('common:settings.plan_and_billing.price')}: {isPremium() ? 8 : 0}€/
-            {t('common:month').toLowerCase()}
-          </span>
-          <span>
-            {t('common:words')}: {company?.subscription?.words}
-          </span>
-          <span>
-            {t('common:quality')}: {t('common:settings.plan_and_billing.quality')}
-          </span>
-        </Price>
-      </Style.Section>
+      {isPremium() && (
+        <Style.Section>
+          <p style={{ margin: 0 }}>
+            {t('common:settings.plan_and_billing.actual_plan')}:{' '}
+            {t(`common:plans.${isPremium() ? 'premium' : 'trial'}`)}
+          </p>
+          <Price>
+            <span>
+              {t('common:settings.plan_and_billing.price')}: {isPremium() ? 8 : 0}€/
+              {t('common:month').toLowerCase()}
+            </span>
+            <span>
+              {t('common:words')}: {company?.subscription?.words}
+            </span>
+            <span>
+              {t('common:quality')}: {t('common:settings.plan_and_billing.quality')}
+            </span>
+          </Price>
+        </Style.Section>
+      )}
 
+      <AnnualSwitchContainer>
+        <span>{t('common:settings.plan_and_billing.premium_plan.monthly')}</span>
+        <Switch value={annual} setValue={setAnnual} />
+        <span>{t('common:settings.plan_and_billing.premium_plan.annual')}</span>
+        <Save>{t('common:settings.plan_and_billing.premium_plan.save')?.toUpperCase()} 25%</Save>
+      </AnnualSwitchContainer>
       <Plans>
         <Style.Section>
           <div style={{ marginBottom: '80px' }}>
@@ -171,7 +185,7 @@ const SettingsPlanAndBilling = ({ user, company }) => {
           </div>
           <Button disabled>
             {isPremium()
-              ? t('common:settings.plan_and_billing.already_used')
+              ? t('common:settings.plan_and_billing.free_plan.already_used')
               : t('common:settings.plan_and_billing.your_plan')}
           </Button>
           <PlansArgument>
@@ -185,7 +199,7 @@ const SettingsPlanAndBilling = ({ user, company }) => {
         </Style.Section>
 
         <Style.Section>
-          <div style={{ marginBottom: '32px' }}>
+          <div style={{ marginBottom: '80px' }}>
             <h6>{t('common:settings.plan_and_billing.premium_plan.title')}</h6>
             <PlansHeaderContent>
               <p>{t('common:settings.plan_and_billing.premium_plan.description')}</p>
@@ -196,30 +210,6 @@ const SettingsPlanAndBilling = ({ user, company }) => {
               marginBottom: '20px',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                columnGap: '10px',
-                alignItems: 'center',
-                marginBottom: '20px',
-              }}
-            >
-              <span>{t('common:settings.plan_and_billing.premium_plan.monthly')}</span>
-              <Switch value={annual} setValue={setAnnual} />
-              <span>{t('common:settings.plan_and_billing.premium_plan.annual')}</span>
-              <div
-                style={{
-                  backgroundColor: theme.colors.blue,
-                  borderRadius: '6px',
-                  padding: '0 6px',
-                }}
-              >
-                <span style={{ color: 'white' }}>
-                  {t('common:settings.plan_and_billing.premium_plan.save')?.toUpperCase()} 25%
-                </span>
-              </div>
-            </div>
             <div>
               <h6 style={{ margin: 0 }}>{applyReduction(offers[words]?.price)} €</h6>
               <span>{t('common:settings.plan_and_billing.premium_plan.per_what')}</span>
@@ -227,7 +217,7 @@ const SettingsPlanAndBilling = ({ user, company }) => {
           </div>
           <Slider
             min={19000}
-            max={350000}
+            max={1000000}
             value={words}
             setValue={setWords}
             markers={offers?.map((offer) => ({ value: offer.words, label: 'lol' }))}
@@ -248,7 +238,20 @@ const SettingsPlanAndBilling = ({ user, company }) => {
               {t('common:seats')}: {offers[words]?.seats}
             </span>
           </div>
-          <Button>{t('common:plans.change_plan')}</Button>
+          <Button
+            onClick={() => {
+              // eslint-disable-next-line no-undef
+              const crisp = $crisp;
+              crisp.push(['do', 'chat:open']);
+              crisp.push([
+                'set',
+                'message:text',
+                ['Bonjour, je voudrais mettre à niveau mon compte'],
+              ]);
+            }}
+          >
+            {t('common:plans.change_plan')}
+          </Button>
           <PlansArgument>
             <img src={imagesLinks.icons.check} alt={'templates'} />
             <span>10+ {t('common:settings.plan_and_billing.arguments.ai_sales_templates')}</span>
@@ -262,13 +265,5 @@ const SettingsPlanAndBilling = ({ user, company }) => {
     </Style.CenteredContainer>
   );
 };
-/*
-"free_plan": {
-  "plan": "Free",
-    "title": "Try Dreamtone for free",
-    "description": "Free trial of Dreamtone features to help you get a taste of AI writing",
-    "per_what": "For a new user",
-    "try_description": "Try all the features to find what works best for you."
-},
- */
+
 export default SettingsPlanAndBilling;

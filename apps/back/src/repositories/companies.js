@@ -12,12 +12,6 @@ function getCompanyById(id) {
   return CompaniesModel.findById(id).lean();
 }
 
-function getCompanyByUserId(userId) {
-  const CompaniesModel = getCompaniesModel();
-
-  return CompaniesModel.findOne({ members_ids: { $in: [userId] } }).lean();
-}
-
 function updateCompanyById(companyId, changes) {
   const CompaniesModel = getCompaniesModel();
 
@@ -27,6 +21,5 @@ function updateCompanyById(companyId, changes) {
 export const companiesRepository = {
   createCompany,
   getCompanyById,
-  getCompanyByUserId,
   updateCompanyById,
 };

@@ -3,11 +3,11 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { usersRolesType } from 'lib-enums';
 
-import { PATHS } from '../../utils';
-import { getUser, disconnectUser } from '../../actions/user';
+import { COOKIES_NAMES, getCookie, PATHS } from '../../utils';
+import { getUser, disconnectUser, GET_USER_SUCCESS } from '../../actions/user';
 import { getCompany } from '../../actions/company';
 
-const LayoutPermissions = ({ children }) => {
+const LayoutPermissions = ({ shouldBeDisconnected, children }) => {
   const router = useRouter();
 
   const dispatch = useDispatch();
@@ -17,9 +17,11 @@ const LayoutPermissions = ({ children }) => {
   const fetch = async () => {
     dispatch(getCompany());
 
+    console.log('HERE');
     const ret = await getUser();
+    console.log(ret);
 
-    if (ret) {
+    if (ret.type === GET_USER_SUCCESS) {
       const { response: user } = ret;
 
       if (user) {
@@ -40,7 +42,16 @@ const LayoutPermissions = ({ children }) => {
   };
 
   useEffect(() => {
-    fetch();
+    console.log(getCookie(COOKIES_NAMES.token));
+    if (shouldBeDisconnected) {
+      if (getCookie(COOKIES_NAMES.token)) {
+        router.replace(PATHS.HOME);
+      } else {
+        setAccess(true);
+      }
+    } else {
+      fetch();
+    }
   }, []);
 
   if (!access) return <div />;

@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
-import { toolsType, subscriptionsType } from 'lib-enums';
+import { toolsType, languagesType, formalitiesType, tonesType } from 'lib-enums';
+
+import { plansType } from '../../../../libs/plans';
 
 const CompaniesSchema = new Schema(
   {
@@ -15,15 +17,16 @@ const CompaniesSchema = new Schema(
     subscription: {
       plan: {
         type: String,
-        enum: Object.keys(subscriptionsType),
-        default: subscriptionsType.free,
-        required: true,
+        enum: Object.keys(plansType),
+        default: null,
+        required: false,
       },
       words: {
         type: Number,
       },
       seats: {
         type: Number,
+        default: 1,
       },
       subscription_date: Date,
     },
@@ -43,6 +46,35 @@ const CompaniesSchema = new Schema(
             document_name: {
               type: String,
               required: false,
+            },
+            input: {
+              subject: {
+                type: String,
+                required: false,
+              },
+              content: {
+                type: String,
+                required: false,
+              },
+              language: {
+                type: String,
+                enum: Object.keys(languagesType),
+                required: false,
+              },
+              tone: {
+                type: String,
+                enum: Object.keys(tonesType),
+                required: false,
+              },
+              formality: {
+                type: String,
+                enum: Object.keys(formalitiesType),
+                required: false,
+              },
+              request: {
+                type: Number,
+                required: false,
+              },
             },
             prompt: {
               type: String,

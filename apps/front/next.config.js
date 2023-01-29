@@ -12,6 +12,7 @@ module.exports = withCustomBabelConfigFile(
     env: {
       url: process.env.URL || 'http://localhost:3000',
       apiUrl: process.env.API_URL || 'http://localhost:3001/api',
+      crispWebsiteId: process.env.CRISP_WEBSITE_ID || 'a469e44d-ad86-48ac-b50f-6f112bd30d81',
     },
     experimental: {
       externalDir: true,
